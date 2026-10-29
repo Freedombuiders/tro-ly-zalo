@@ -25,11 +25,12 @@ Chưa có thì tải về:
   git clone --depth 1 https://github.com/hoanghd218/tro-ly-zalo.git ~/tro-ly-zalo
   ```
 - **Không có Git** thì tải file ZIP:
-  - macOS, Linux:
+  - macOS (dùng `ditto`, **không dùng `unzip`**: `unzip` của macOS làm hỏng tên file tiếng Việt có dấu):
     ```bash
     curl -fL -o /tmp/tro-ly-zalo.zip https://github.com/hoanghd218/tro-ly-zalo/archive/refs/heads/main.zip \
-      && rm -rf /tmp/tro-ly-zalo-main && unzip -q /tmp/tro-ly-zalo.zip -d /tmp && mv /tmp/tro-ly-zalo-main ~/tro-ly-zalo
+      && rm -rf /tmp/tro-ly-zalo-main && ditto -x -k /tmp/tro-ly-zalo.zip /tmp && mv /tmp/tro-ly-zalo-main ~/tro-ly-zalo
     ```
+  - Linux: như trên nhưng thay `ditto -x -k /tmp/tro-ly-zalo.zip /tmp` bằng `unzip -q /tmp/tro-ly-zalo.zip -d /tmp`.
   - Windows PowerShell:
     ```powershell
     Invoke-WebRequest https://github.com/hoanghd218/tro-ly-zalo/archive/refs/heads/main.zip -OutFile "$env:TEMP\tro-ly-zalo.zip"
