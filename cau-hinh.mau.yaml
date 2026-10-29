@@ -24,6 +24,7 @@ mac_dinh:
   chat_rieng: true
   nhom_khi_duoc_tag: true
   che_do: nhap
+  # che_do_nhom: tu-gui   # bỏ dấu # để gửi thật ở nhóm khi được tag, tin riêng vẫn theo che_do
 
 # Danh sách agent. Mỗi agent có thư mục agents/<id>/vai-tro.md mô tả vai trò.
 agents:
@@ -36,18 +37,21 @@ agents:
     tra_loi_khi: moi-tin
     # nhap: chỉ in câu trả lời ra màn hình để bạn xem, không gửi. tu-gui: gửi thật vào nhóm.
     che_do: nhap
+  # che_do_nhom: tu-gui   # bỏ dấu # để gửi thật ở nhóm khi được tag, tin riêng vẫn theo che_do
 
   - id: cskh-khach-hang
     ten: Chăm sóc khách hàng Sen Vàng
     nhom: []
     tra_loi_khi: moi-tin
     che_do: nhap
+  # che_do_nhom: tu-gui   # bỏ dấu # để gửi thật ở nhóm khi được tag, tin riêng vẫn theo che_do
 
   - id: tro-ly-noi-bo
     ten: Trợ lý nội bộ Sen Vàng
     nhom: []
     tra_loi_khi: khi-duoc-goi
     che_do: nhap
+  # che_do_nhom: tu-gui   # bỏ dấu # để gửi thật ở nhóm khi được tag, tin riêng vẫn theo che_do
 
 # Đồng bộ bảng tính (Google Sheet hoặc file Excel) vào bộ não, để agent luôn đọc giá và số chỗ mới nhất.
 # Google Sheet phải bật chia sẻ "Bất kỳ ai có đường liên kết đều xem được".

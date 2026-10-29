@@ -68,6 +68,12 @@ function taoKhoa(toiDa) {
 export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgent, guiZalo = guiTin, guiAnhZalo = guiAnh } = {}) {
   const api = apiCo ?? await ketNoi();
   const toi = String(await api.getOwnId());
+  // Tên Zalo của nick, để agent hiểu "@tên" trong nhóm là đang gọi chính nó.
+  let tenNick = '';
+  try {
+    const p = (await api.fetchAccountInfo?.())?.profile;
+    tenNick = String(p?.displayName || p?.zaloName || '').trim();
+  } catch { /* không có tên thì thôi */ }
   const agentCuaNhom = new Map();
   for (const a of ch.agents) for (const n of a.nhom) agentCuaNhom.set(n, a);
   const md = ch.mac_dinh;
@@ -144,8 +150,10 @@ export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgen
       const kq = await khoa(() => hoi({
         ch, agent,
         tinhHuong: {
-          noiChat, lichSu, tinMoi,
-          ghiChu: loai === ThreadType.Group && duocGoi ? 'Trong tin mới có người tag bạn hoặc trả lời vào tin của bạn.' : '',
+          noiChat, lichSu, tinMoi, tenNick,
+          ghiChu: loai === ThreadType.Group && duocGoi
+            ? 'Trong tin mới có người tag bạn hoặc trả lời vào tin của bạn: họ đang gọi bạn, hãy đáp lại (kể cả khi chỉ là lời gọi), trừ khi rõ ràng không cần.'
+            : '',
         },
       }));
       clearInterval(dangSoan);
@@ -192,7 +200,7 @@ export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgen
       // Nhóm chưa giao: agent mặc định chỉ trả lời khi được tag, và không ghi log từng tin của nhóm.
       const nhomMacDinh = laNhom && !agent && md.nhom_khi_duoc_tag && Boolean(agentMacDinh);
       if (nhomMacDinh) agent = agentMacDinh;
-      const nhap = (theoMacDinh ? md.che_do : agent?.che_do) !== 'tu-gui';
+      const nhap = (theoMacDinh ? (laNhom ? md.che_do_nhom ?? md.che_do : md.che_do) : agent?.che_do) !== 'tu-gui';
       let noi_dung = noiDungTin(m.data);
       const ts = Number(m.data.ts) || Date.now();
       const id = String(m.data.msgId || m.data.cliMsgId || ts);

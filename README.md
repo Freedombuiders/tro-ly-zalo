@@ -118,6 +118,7 @@ mac_dinh:                                    # agent trực mặc định
   chat_rieng: true                           # trả lời mọi tin nhắn riêng 1-1
   nhom_khi_duoc_tag: true                    # nhóm chưa giao: trả lời khi có người tag nick
   che_do: nhap                               # nhap | tu-gui cho các tin đi theo mặc định
+  che_do_nhom: tu-gui                        # riêng cho nhóm khi được tag (không ghi thì theo che_do)
 agents:
   - id: cskh-khach-hang                      # vai trò ở agents/cskh-khach-hang/vai-tro.md
     ten: Chăm sóc khách hàng

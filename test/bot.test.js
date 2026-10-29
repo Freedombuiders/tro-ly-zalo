@@ -218,3 +218,14 @@ test('trả lời nhiều tin: trích dẫn tin khách ở tin đầu, gửi ả
   await doi(150);
   assert.equal(hoi.length, 2);
 });
+
+test('mac_dinh.che_do_nhom: gửi thật ở nhóm khi được tag, tin riêng người lạ vẫn nháp', async () => {
+  const { api, gui, hoi } = await khoiDong(cauHinh([agentMau({ nhom: [] })], {
+    mac_dinh: { agent: 'a', chat_rieng: true, nhom_khi_duoc_tag: true, che_do: 'nhap', che_do_nhom: 'tu-gui' },
+  }));
+  api.listener.emit('message', tinNhom('G7', '@nick e ui', { data: { mentions: [{ uid: 'TOI', pos: 0, len: 5, type: 0 }] } }));
+  api.listener.emit('message', { type: ThreadType.User, threadId: 'U9', isSelf: false, data: { msgId: 'u9', ts: String(Date.now()), dName: 'Lạ', content: 'alo' } });
+  await doi(150);
+  assert.equal(hoi.length, 2);
+  assert.deepEqual(gui.map((g) => g.threadId), ['G7']);
+});

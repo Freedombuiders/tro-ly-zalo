@@ -76,11 +76,14 @@ function docMacDinh(raw) {
       chat_rieng: m.chat_rieng !== false,
       nhom_khi_duoc_tag: m.nhom_khi_duoc_tag !== false,
       che_do: m.che_do === 'tu-gui' ? 'tu-gui' : 'nhap',
+      // Riêng cho nhóm (khi được tag). Không ghi thì theo che_do.
+      che_do_nhom: (m.che_do_nhom ?? m.che_do) === 'tu-gui' ? 'tu-gui' : 'nhap',
     };
   }
-  if (typeof m === 'string' && m.trim()) return { agent: m.trim(), chat_rieng: true, nhom_khi_duoc_tag: true, che_do: 'nhap' };
-  if (raw.chat_rieng) return { agent: String(raw.chat_rieng).trim(), chat_rieng: true, nhom_khi_duoc_tag: false, che_do: 'nhap' };
-  return { agent: '', chat_rieng: false, nhom_khi_duoc_tag: false, che_do: 'nhap' };
+  const tat = { che_do: 'nhap', che_do_nhom: 'nhap' };
+  if (typeof m === 'string' && m.trim()) return { agent: m.trim(), chat_rieng: true, nhom_khi_duoc_tag: true, ...tat };
+  if (raw.chat_rieng) return { agent: String(raw.chat_rieng).trim(), chat_rieng: true, nhom_khi_duoc_tag: false, ...tat };
+  return { agent: '', chat_rieng: false, nhom_khi_duoc_tag: false, ...tat };
 }
 
 /** Những lỗi cấu hình khiến trợ lý không chạy được. */

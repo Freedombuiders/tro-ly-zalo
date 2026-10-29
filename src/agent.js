@@ -73,7 +73,7 @@ const dongTin = (t) => `[${gioVietNam(new Date(t.ts)).gio}] ${t.la_bot ? 'Bạn'
  * Tin: { ts, ten, noi_dung, la_bot }
  */
 export function loiNhacNguoiDung(agent, tinhHuong) {
-  const phan = [`Nơi trò chuyện: ${tinhHuong.noiChat}. Bạn là "${agent.ten}".`];
+  const phan = [`Nơi trò chuyện: ${tinhHuong.noiChat}. Bạn là "${agent.ten}"${tinhHuong.tenNick ? `, nhắn bằng nick Zalo tên "${tinhHuong.tenNick}" (tin có "@${tinhHuong.tenNick}" là đang gọi bạn)` : ''}.`];
   if (tinhHuong.lichSu?.length) phan.push(`Tin nhắn trước đó (cũ đến mới):\n${tinhHuong.lichSu.map(dongTin).join('\n')}`);
   phan.push(`Tin mới cần xem xét:\n${tinhHuong.tinMoi.map(dongTin).join('\n')}`);
   if (tinhHuong.ghiChu) phan.push(tinhHuong.ghiChu);

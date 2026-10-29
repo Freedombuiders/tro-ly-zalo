@@ -43,3 +43,8 @@ test('ảnh: chỉ giữ đuôi ảnh, tối đa 3; liệt kê ảnh trong bộ 
   assert.deepEqual(dsAnh(goc), ['Ảnh tour/Nhật.jpg']);
   assert.match(loiNhacNguoiDung({ ten: 'A' }, { noiChat: 'x', tinMoi: [{ ts: 0, ten: 'K', noi_dung: 'q' }], anhCoSan: ['Ảnh tour/Nhật.jpg'] }), /Ảnh có sẵn[\s\S]*- Ảnh tour\/Nhật\.jpg/);
 });
+
+test('lời nhắc nói rõ tên nick để agent hiểu được tag', () => {
+  const s = loiNhacNguoiDung({ ten: 'Tư vấn' }, { noiChat: 'nhóm Zalo "Freedom Edu"', tinMoi: [{ ts: 0, ten: 'Hoang', noi_dung: '@Hiên Tl e ui' }], tenNick: 'Hiên Tl' });
+  assert.match(s, /nick Zalo tên "Hiên Tl" \(tin có "@Hiên Tl" là đang gọi bạn\)/);
+});

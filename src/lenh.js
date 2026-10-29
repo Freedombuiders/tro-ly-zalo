@@ -126,7 +126,11 @@ async function chay() {
   const md = ch.mac_dinh;
   if (md.agent && (md.chat_rieng || md.nhom_khi_duoc_tag)) {
     const viec = [md.chat_rieng && 'mọi tin nhắn riêng 1-1', md.nhom_khi_duoc_tag && 'mọi nhóm khác khi được tag'].filter(Boolean).join(' và ');
-    console.log(`  - Mặc định: ${timAgent(ch, md.agent).ten} (${md.agent}) trả lời ${viec}, ${md.che_do === 'tu-gui' ? 'TỰ GỬI' : 'NHÁP (chỉ in ra đây, chưa gửi)'}`);
+    const cheDo = (c) => (c === 'tu-gui' ? 'TỰ GỬI' : 'NHÁP');
+    const kieu = md.chat_rieng && md.nhom_khi_duoc_tag && md.che_do !== md.che_do_nhom
+      ? `tin riêng ${cheDo(md.che_do)}, nhóm ${cheDo(md.che_do_nhom)}`
+      : cheDo(md.nhom_khi_duoc_tag && !md.chat_rieng ? md.che_do_nhom : md.che_do);
+    console.log(`  - Mặc định: ${timAgent(ch, md.agent).ten} (${md.agent}) trả lời ${viec}, ${kieu}`);
   }
   console.log('Nhấn Ctrl+C để dừng.\n');
 }
