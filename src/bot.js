@@ -101,11 +101,10 @@ export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgen
     }
     h.dangChay = true;
     const tinMoi = h.tin.splice(0);
-    const { agent, loai, noiChat } = tinMoi[tinMoi.length - 1];
+    const { agent, loai, noiChat, nhap } = tinMoi[tinMoi.length - 1];
     const idMoi = new Set(tinMoi.map((t) => t.id));
     const lichSu = docLichSu(threadId, 40).filter((t) => !idMoi.has(t.id)).slice(-25);
     const duocGoi = tinMoi.some((t) => t.duocGoi);
-    const nhap = agent.che_do !== 'tu-gui';
     // Hiện "đang soạn tin" suốt lúc agent nghĩ khi gần như chắc sẽ trả lời (tin riêng, hoặc được tag trong nhóm).
     let dangSoan;
     if (!nhap && (loai === ThreadType.User || duocGoi)) {
@@ -156,10 +155,14 @@ export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgen
     try {
       const threadId = String(m.threadId);
       const laNhom = m.type === ThreadType.Group;
-      let agent = laNhom ? agentCuaNhom.get(threadId) : md.chat_rieng ? agentMacDinh : null;
+      // Nhóm hoặc người được giao rõ trong "nhom" của agent thì theo agent đó; còn lại theo mac_dinh.
+      let agent = agentCuaNhom.get(threadId);
+      const theoMacDinh = !agent;
+      if (!agent && !laNhom && md.chat_rieng) agent = agentMacDinh;
       // Nhóm chưa giao: agent mặc định chỉ trả lời khi được tag, và không ghi log từng tin của nhóm.
       const nhomMacDinh = laNhom && !agent && md.nhom_khi_duoc_tag && Boolean(agentMacDinh);
       if (nhomMacDinh) agent = agentMacDinh;
+      const nhap = (theoMacDinh ? md.che_do : agent?.che_do) !== 'tu-gui';
       let noi_dung = noiDungTin(m.data);
       const ts = Number(m.data.ts) || Date.now();
       const id = String(m.data.msgId || m.data.cliMsgId || ts);
@@ -206,7 +209,7 @@ export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgen
 
       if (!hang.has(threadId)) hang.set(threadId, { tin: [], hen: null, dangChay: false, chayLai: false });
       const h = hang.get(threadId);
-      h.tin.push({ id, ts, ten, noi_dung, la_bot: false, data: m.data, agent, loai: m.type, noiChat, duocGoi });
+      h.tin.push({ id, ts, ten, noi_dung, la_bot: false, data: m.data, agent, loai: m.type, noiChat, duocGoi, nhap });
       clearTimeout(h.hen);
       h.hen = setTimeout(() => xuLy(threadId), laNhom ? CHO_GOM_TIN_MS.nhom : CHO_GOM_TIN_MS.rieng);
     } catch (err) {

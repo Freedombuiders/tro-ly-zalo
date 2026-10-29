@@ -100,16 +100,19 @@ Tạo tự động từ `cau-hinh.mau.yaml` ở lần chạy đầu. Nhờ Claud
 ```yaml
 bo_nao: "/Users/ban/Documents/Bộ não số 2"   # thư mục bộ não
 ai: claude                                   # claude hoặc codex
-model: sonnet                                # sonnet (khuyên dùng), haiku (nhanh, rẻ)
+model:
+  claude: claude-sonnet-5-5                  # claude-haiku-5-5 nếu muốn nhanh, rẻ hơn
+  codex: gpt-6.1-sol
 nhom_bao_cao: "1234567890"                   # nhóm quản lý nhận cảnh báo (tuỳ chọn)
 mac_dinh:                                    # agent trực mặc định
   agent: cskh-khach-hang
   chat_rieng: true                           # trả lời mọi tin nhắn riêng 1-1
   nhom_khi_duoc_tag: true                    # nhóm chưa giao: trả lời khi có người tag nick
+  che_do: nhap                               # nhap | tu-gui cho các tin đi theo mặc định
 agents:
   - id: cskh-khach-hang                      # vai trò ở agents/cskh-khach-hang/vai-tro.md
     ten: Chăm sóc khách hàng
-    nhom: ["1234567890"]                     # id nhóm, lấy bằng npm run nhom
+    nhom: ["1234567890"]                     # id nhóm (npm run nhom) hoặc id người tin riêng
     tra_loi_khi: moi-tin                     # moi-tin | khi-duoc-goi (chỉ khi được tag)
     che_do: nhap                             # nhap (chỉ in ra) | tu-gui (gửi thật)
 dong_bo:
@@ -145,7 +148,7 @@ Agent hiểu doanh nghiệp qua ba lớp: `src/luat-chung.md` (luật chung, gi�
 | Mã QR hết hạn | Chạy lại `npm run dang-nhap`, quét trong vòng 1 phút |
 | `Không đăng nhập lại được bằng phiên đã lưu` | Phiên hết hạn hoặc nick đăng nhập ở máy khác: `npm run dang-nhap` |
 | Agent trả lời sai giá | Sửa trong bộ não hoặc Google Sheet (agent luôn đọc bản mới nhất), không sửa trong code |
-| Agent trả lời chậm (20–60 giây) | Bình thường khi phải tra nhiều file. Muốn nhanh hơn: `model: haiku` |
+| Agent trả lời chậm (20–60 giây) | Bình thường khi phải tra nhiều file. Muốn nhanh hơn: `claude: claude-haiku-5-5` trong `model` |
 
 ## Giấy phép
 

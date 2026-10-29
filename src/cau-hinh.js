@@ -27,7 +27,6 @@ export function docCauHinh() {
   const ch = {
     bo_nao: duongDan(raw.bo_nao || './bo-nao-mau'),
     ai: raw.ai === 'codex' ? 'codex' : 'claude',
-    model: raw.model ? String(raw.model).trim() : '',
     nhom_bao_cao: raw.nhom_bao_cao ? String(raw.nhom_bao_cao).trim() : '',
     mac_dinh: docMacDinh(raw),
     agents: [],
@@ -38,14 +37,15 @@ export function docCauHinh() {
   };
   for (const a of Array.isArray(raw.agents) ? raw.agents : []) {
     if (!a?.id) continue;
+    const ai = a.ai === 'codex' || a.ai === 'claude' ? a.ai : ch.ai;
     ch.agents.push({
       id: String(a.id).trim(),
       ten: a.ten ? String(a.ten).trim() : String(a.id),
       nhom: (Array.isArray(a.nhom) ? a.nhom : a.nhom ? [a.nhom] : []).map((x) => String(x).trim()).filter(Boolean),
       tra_loi_khi: a.tra_loi_khi === 'khi-duoc-goi' ? 'khi-duoc-goi' : 'moi-tin',
       che_do: a.che_do === 'tu-gui' ? 'tu-gui' : 'nhap',
-      ai: a.ai === 'codex' || a.ai === 'claude' ? a.ai : ch.ai,
-      model: a.model ? String(a.model).trim() : a.ai && a.ai !== ch.ai ? '' : ch.model,
+      ai,
+      model: a.model ? String(a.model).trim() : modelCho(raw.model, ai, ch.ai),
     });
   }
   return ch;
@@ -59,11 +59,12 @@ function docMacDinh(raw) {
       agent: m.agent ? String(m.agent).trim() : '',
       chat_rieng: m.chat_rieng !== false,
       nhom_khi_duoc_tag: m.nhom_khi_duoc_tag !== false,
+      che_do: m.che_do === 'tu-gui' ? 'tu-gui' : 'nhap',
     };
   }
-  if (typeof m === 'string' && m.trim()) return { agent: m.trim(), chat_rieng: true, nhom_khi_duoc_tag: true };
-  if (raw.chat_rieng) return { agent: String(raw.chat_rieng).trim(), chat_rieng: true, nhom_khi_duoc_tag: false };
-  return { agent: '', chat_rieng: false, nhom_khi_duoc_tag: false };
+  if (typeof m === 'string' && m.trim()) return { agent: m.trim(), chat_rieng: true, nhom_khi_duoc_tag: true, che_do: 'nhap' };
+  if (raw.chat_rieng) return { agent: String(raw.chat_rieng).trim(), chat_rieng: true, nhom_khi_duoc_tag: false, che_do: 'nhap' };
+  return { agent: '', chat_rieng: false, nhom_khi_duoc_tag: false, che_do: 'nhap' };
 }
 
 /** Những lỗi cấu hình khiến trợ lý không chạy được. */
@@ -84,6 +85,14 @@ export function kiemTraCauHinh(ch) {
 }
 
 export const fileVaiTro = (id) => path.join(GOC, 'agents', id, 'vai-tro.md');
+export const MODEL_MAC_DINH = { claude: 'claude-sonnet-5-5', codex: 'gpt-6.1-sol' };
+
+/** "model" là một chuỗi (dùng cho AI chính) hoặc { claude, codex }. Trống thì dùng model mặc định. */
+function modelCho(model, ai, aiChinh) {
+  if (model && typeof model === 'object') return model[ai] ? String(model[ai]).trim() : MODEL_MAC_DINH[ai];
+  if (model && ai === aiChinh) return String(model).trim();
+  return MODEL_MAC_DINH[ai];
+}
 export const FILE_TOM_TAT = path.join(GOC, 'agents', 'tom-tat-doanh-nghiep.md');
 
 export function timAgent(ch, id) {

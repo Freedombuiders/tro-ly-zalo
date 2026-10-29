@@ -2,12 +2,12 @@
 dong-bo: tu-dong
 nguon: "Lịch khởi hành tour ghép"
 trang-tinh: "TRUNG QUỐC"
-cap-nhat: "22:01 29/10/2026"
+cap-nhat: "22:16 29/10/2026"
 ---
 
 # TRUNG QUỐC
 
-> Tự động đồng bộ từ bảng tính "Lịch khởi hành tour ghép" lúc 22:01 29/10/2026. Đây là dữ liệu mới nhất; sửa trong bảng tính gốc, đừng sửa file này.
+> Tự động đồng bộ từ bảng tính "Lịch khởi hành tour ghép" lúc 22:16 29/10/2026. Đây là dữ liệu mới nhất; sửa trong bảng tính gốc, đừng sửa file này.
 
 TOUR GHÉP TRUNG QUỐC 2026 - 2027
 LƯU Ý: CTV/ĐẠI LÝ GỬI CODE TOUR CHO SALES SEN VÀNG ĐỂ GIỮ CHỖ TRƯỚC KHI CHỐT KHÁCH

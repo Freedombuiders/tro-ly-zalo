@@ -129,7 +129,7 @@ test('tin riêng 1-1 chỉ trả lời khi bật mac_dinh.chat_rieng', async () 
   await doi(80);
   assert.equal(khong.hoi.length, 0);
 
-  const co = await khoiDong(cauHinh([agentMau()], { mac_dinh: { agent: 'a', chat_rieng: true, nhom_khi_duoc_tag: false } }));
+  const co = await khoiDong(cauHinh([agentMau()], { mac_dinh: { agent: 'a', chat_rieng: true, nhom_khi_duoc_tag: false, che_do: 'tu-gui' } }));
   co.api.listener.emit('message', { ...tinRieng, data: { ...tinRieng.data, msgId: 'r2' } });
   await doi(80);
   assert.equal(co.hoi.length, 1);
@@ -157,7 +157,7 @@ test('nhóm chưa giao: agent mặc định chỉ trả lời khi được tag',
 });
 
 test('đang soạn tin: hiện khi tự gửi và được tag hoặc tin riêng, không hiện ở chế độ nháp', async () => {
-  const tuGui = await khoiDong(cauHinh([agentMau()], { mac_dinh: { agent: 'a', chat_rieng: true, nhom_khi_duoc_tag: true } }));
+  const tuGui = await khoiDong(cauHinh([agentMau()], { mac_dinh: { agent: 'a', chat_rieng: true, nhom_khi_duoc_tag: true, che_do: 'tu-gui' } }));
   tuGui.api.listener.emit('message', { type: ThreadType.User, threadId: 'U5', isSelf: false, data: { msgId: 'u5', ts: String(Date.now()), dName: 'Lan', content: 'alo' } });
   tuGui.api.listener.emit('message', tinNhom('G1', 'nói chuyện thường'));
   await doi(100);
@@ -167,4 +167,17 @@ test('đang soạn tin: hiện khi tự gửi và được tag hoặc tin riêng
   nhap.api.listener.emit('message', { type: ThreadType.User, threadId: 'U6', isSelf: false, data: { msgId: 'u6', ts: String(Date.now()), dName: 'Lan', content: 'alo' } });
   await doi(100);
   assert.deepEqual(nhap.api.dangSoan, []);
+});
+
+test('người được giao rõ theo chế độ của agent, tin riêng khác theo chế độ mặc định', async () => {
+  const { api, hoi, gui } = await khoiDong(cauHinh(
+    [agentMau({ nhom: ['U-test'], che_do: 'tu-gui' })],
+    { mac_dinh: { agent: 'a', chat_rieng: true, nhom_khi_duoc_tag: true, che_do: 'nhap' } },
+  ));
+  const rieng = (threadId) => ({ type: ThreadType.User, threadId, isSelf: false, data: { msgId: `m-${threadId}`, ts: String(Date.now()), dName: 'X', content: 'alo' } });
+  api.listener.emit('message', rieng('U-test'));
+  api.listener.emit('message', rieng('U-khac'));
+  await doi(120);
+  assert.equal(hoi.length, 2);
+  assert.deepEqual(gui.map((g) => g.threadId), ['U-test']);
 });

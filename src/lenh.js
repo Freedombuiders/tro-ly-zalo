@@ -120,12 +120,12 @@ async function chay() {
   await chayBot(ch);
   console.log(`[${gio()}] Trợ lý Zalo đang chạy. Bộ não: ${ch.bo_nao}`);
   for (const a of ch.agents) {
-    console.log(`  - ${a.ten} (${a.id}): ${a.nhom.length} nhóm, ${a.tra_loi_khi === 'moi-tin' ? 'đọc mọi tin' : 'chỉ khi được tag'}, ${a.che_do === 'tu-gui' ? 'TỰ GỬI' : 'NHÁP (chỉ in ra đây, chưa gửi)'}`);
+    console.log(`  - ${a.ten} (${a.id}, ${a.model || a.ai}): ${a.nhom.length} nhóm/người, ${a.tra_loi_khi === 'moi-tin' ? 'đọc mọi tin' : 'chỉ khi được tag'}, ${a.che_do === 'tu-gui' ? 'TỰ GỬI' : 'NHÁP (chỉ in ra đây, chưa gửi)'}`);
   }
   const md = ch.mac_dinh;
   if (md.agent && (md.chat_rieng || md.nhom_khi_duoc_tag)) {
     const viec = [md.chat_rieng && 'mọi tin nhắn riêng 1-1', md.nhom_khi_duoc_tag && 'mọi nhóm khác khi được tag'].filter(Boolean).join(' và ');
-    console.log(`  - Mặc định: ${timAgent(ch, md.agent).ten} (${md.agent}) trả lời ${viec}`);
+    console.log(`  - Mặc định: ${timAgent(ch, md.agent).ten} (${md.agent}) trả lời ${viec}, ${md.che_do === 'tu-gui' ? 'TỰ GỬI' : 'NHÁP (chỉ in ra đây, chưa gửi)'}`);
   }
   console.log('Nhấn Ctrl+C để dừng.\n');
 }

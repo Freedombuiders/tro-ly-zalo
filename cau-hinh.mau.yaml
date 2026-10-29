@@ -7,8 +7,10 @@ bo_nao: ./bo-nao-mau
 
 # AI trả lời tin nhắn: claude (Claude Code) hoặc codex (Codex). Cần cài và đăng nhập trước.
 ai: claude
-# Model. Để trống thì dùng mặc định của CLI. Claude: sonnet (khuyên dùng), haiku (nhanh, rẻ), opus.
-model: sonnet
+# Model cho từng loại AI. Muốn nhanh, rẻ hơn với Claude thì dùng claude-haiku-5-5.
+model:
+  claude: claude-sonnet-5-5
+  codex: gpt-6.1-sol
 
 # Nhóm Zalo nhận cảnh báo khi agent cần người thật (khách muốn chốt, khiếu nại, câu hỏi chưa có dữ liệu).
 # Lấy id bằng lệnh: npm run nhom. Để trống thì chỉ in ra màn hình.
@@ -16,17 +18,18 @@ nhom_bao_cao: ""
 
 # Agent mặc định: trả lời mọi tin nhắn riêng 1-1, và ở mọi nhóm chưa giao cho agent nào
 # thì trả lời khi có người tag nick (@tên nick) hoặc trả lời vào tin của agent.
-# Chế độ nháp/tự gửi theo che_do của agent đó. Để trống agent thì tắt.
+# Để trống agent thì tắt. Nơi được giao rõ trong "nhom" của agent thì theo che_do của agent đó.
 mac_dinh:
   agent: cskh-khach-hang
   chat_rieng: true
   nhom_khi_duoc_tag: true
+  che_do: nhap
 
 # Danh sách agent. Mỗi agent có thư mục agents/<id>/vai-tro.md mô tả vai trò.
 agents:
   - id: ai-sales-dai-ly
     ten: Trợ lý Sales Sen Vàng
-    # id các nhóm Zalo agent này chăm sóc (lấy bằng: npm run nhom)
+    # id các nhóm Zalo (lấy bằng: npm run nhom) hoặc id người (tin riêng) agent này chăm sóc
     nhom: []
     # moi-tin: đọc mọi tin, tự quyết trả lời hay im lặng
     # khi-duoc-goi: chỉ trả lời khi được tag (@tên nick) hoặc có người trả lời vào tin của agent
