@@ -51,6 +51,8 @@ agents:
 
 # Đồng bộ bảng tính (Google Sheet hoặc file Excel) vào bộ não, để agent luôn đọc giá và số chỗ mới nhất.
 # Google Sheet phải bật chia sẻ "Bất kỳ ai có đường liên kết đều xem được".
+# tai_lich_trinh: true thì tải luôn nội dung các Google Docs được link trong bảng (lịch trình, mô tả sản phẩm)
+# để agent tư vấn chi tiết từng ngày. Lần đầu có thể mất vài phút, sau đó 24 giờ mới tải lại.
 dong_bo:
   moi_phut: 15
   nguon:
@@ -65,5 +67,6 @@ dong_bo:
     # Dữ liệu thật để thử (VN Express Tour): bỏ dấu # ở 3 dòng dưới. Nên dùng với bộ não riêng,
     # không trộn với bộ não mẫu Sen Vàng. Có thể thay link bằng link Google Sheet của bạn.
     # - ten: Lịch khởi hành tour ghép quốc tế VNE
-    #   link: ./du-lieu-mau/VNE3 - LKH TOUR GHÉP QUỐC TẾ.xlsx
+    #   link: https://docs.google.com/spreadsheets/d/1u8HhQcn8iGpjDLFxnGY_Y4qZ8lmE1Yu1C18j_pR5rVI/edit
     #   luu_vao: 6. Company Brain OS/1. Sản Phẩm & R&D/Danh Mục Sản Phẩm/Lịch khởi hành VNE
+    #   tai_lich_trinh: true

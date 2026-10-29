@@ -70,7 +70,7 @@ Bộ não mẫu `bo-nao-mau/` là của công ty du lịch hư cấu **Sen Vàng
 
 Giá, lịch và số chỗ nằm trong hai file Excel ở `bo-nao-mau/1. Thu Thập/`, được đồng bộ thành ghi chú trong bộ não. Thay bằng link Google Sheet của bạn là agent đọc ngay sheet đó.
 
-**Dữ liệu thật để thử:** `du-lieu-mau/VNE3 - LKH TOUR GHÉP QUỐC TẾ.xlsx` là bảng lịch khởi hành tour ghép quốc tế của **VN Express Tour** (anh Hiếu Đặng chia sẻ làm ví dụ cho buổi thực hành): hàng trăm lịch khởi hành có mã tour, giá, hoa hồng CTV, số chỗ còn lại, link lịch trình. Giá và số chỗ là ảnh chụp tại thời điểm chia sẻ, không dùng để đặt tour thật. Cách dùng: bỏ dấu `#` ở nguồn VNE trong `cau-hinh.yaml` (mục `dong_bo`), chạy `npm run dong-bo`, rồi hỏi thử agent Sales "Lệ Giang tháng 12 còn chỗ không, cho mã tour với com".
+**Dữ liệu thật để thử:** `du-lieu-mau/VNE3 - LKH TOUR GHÉP QUỐC TẾ.xlsx` là bảng lịch khởi hành tour ghép quốc tế của **VN Express Tour** (anh Hiếu Đặng chia sẻ làm ví dụ cho buổi thực hành): hàng trăm lịch khởi hành có mã tour, giá, hoa hồng CTV, số chỗ còn lại, link lịch trình. Giá và số chỗ là ảnh chụp tại thời điểm chia sẻ, không dùng để đặt tour thật. Cách dùng: bỏ dấu `#` ở nguồn VNE trong `cau-hinh.yaml` (mục `dong_bo`, đọc thẳng Google Sheet của VNE và tải luôn hơn 500 file lịch trình Google Docs được link trong bảng), chạy `npm run dong-bo`, rồi hỏi thử agent Sales "Lệ Giang tháng 12 còn chỗ không, cho mã tour với com".
 
 ## Cách hoạt động
 
@@ -130,6 +130,7 @@ dong_bo:
     - ten: Bảng giá
       link: https://docs.google.com/spreadsheets/d/.../edit
       luu_vao: 6. Company Brain OS/1. Sản Phẩm & R&D/Danh Mục Sản Phẩm/Bảng giá
+      tai_lich_trinh: true                   # tải cả các Google Docs được link trong bảng (lịch trình)
 ```
 
 Agent hiểu doanh nghiệp qua ba lớp: `src/luat-chung.md` (luật chung, giống nhau mọi doanh nghiệp), `agents/tom-tat-doanh-nghiep.md` (tóm tắt bộ não, Claude Code viết lúc cài) và `agents/<id>/vai-tro.md` (vai trò từng agent). Sửa ba file này bằng tiếng Việt thường là đổi được cách agent làm việc.

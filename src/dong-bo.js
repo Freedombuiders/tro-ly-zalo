@@ -123,34 +123,118 @@ function thoiDiem() {
   return `${p2(vn.getUTCHours())}:${p2(vn.getUTCMinutes())} ${p2(vn.getUTCDate())}/${p2(vn.getUTCMonth() + 1)}/${vn.getUTCFullYear()}`;
 }
 
+const LINK_GOOGLE_DOC = /https:\/\/docs\.google\.com\/document\/d\/([\w-]{20,})[^\s)|;]*/g;
+const THU_MUC_LICH_TRINH = 'Lịch trình';
+const FILE_CHI_MUC_LICH_TRINH = '.chi-muc-lich-trinh.json';
+const TAI_LAI_SAU_MS = 24 * 3600 * 1000;
+const THU_LAI_LOI_SAU_MS = 3600 * 1000;
+
+async function taiGoogleDoc(id) {
+  for (let lan = 1; ; lan++) {
+    try {
+      const res = await fetch(`https://docs.google.com/document/d/${id}/export?format=txt`, { redirect: 'follow', signal: AbortSignal.timeout(30_000) });
+      const loai = res.headers.get('content-type') || '';
+      // Trang HTML = tài liệu chưa chia sẻ công khai: thử lại cũng vô ích.
+      if (res.ok && loai.includes('text/html')) throw Object.assign(new Error('chưa chia sẻ'), { dungLai: true });
+      if (!res.ok || !loai.includes('text/plain')) throw new Error(`HTTP ${res.status}`);
+      return await res.text();
+    } catch (err) {
+      if (err.dungLai || lan >= 3) throw err;
+      await new Promise((r) => setTimeout(r, lan * 2000));
+    }
+  }
+}
+
+/** Tên một lịch trình: dòng đầu trông như tuyến đi (có dấu gạch nối, chữ hoa), không thì dòng có chữ đầu tiên. */
+export function tieuDeLichTrinh(text) {
+  const dong = text.split('\n').map((s) => s.replace(/\s+/g, ' ').trim()).filter((s) => s.length > 3);
+  const tuyen = dong.find((s) => /[–-]/.test(s) && s.length <= 90 && s === s.toUpperCase());
+  return (tuyen || dong[0] || 'Lịch trình').slice(0, 80);
+}
+
+/** Tải nội dung các Google Docs (lịch trình, mô tả sản phẩm) được link trong bảng. Trả về Map id -> đường dẫn file tương đối. */
+async function taiLichTrinh(thuMuc, ids, log) {
+  const goc = path.join(thuMuc, THU_MUC_LICH_TRINH);
+  fs.mkdirSync(goc, { recursive: true });
+  const fileChiMuc = path.join(goc, FILE_CHI_MUC_LICH_TRINH);
+  let chiMuc = {};
+  try { chiMuc = JSON.parse(fs.readFileSync(fileChiMuc, 'utf8')); } catch { /* lần đầu */ }
+  const dem = { moi: 0, cu: 0, loi: 0 };
+  const hangDoi = [...ids];
+  const tai = async () => {
+    for (let id = hangDoi.shift(); id; id = hangDoi.shift()) {
+      const cu = chiMuc[id];
+      const conMoi = cu && Date.now() - cu.luc < (cu.loi ? THU_LAI_LOI_SAU_MS : TAI_LAI_SAU_MS);
+      if (conMoi && (cu.loi || fs.existsSync(path.join(goc, cu.file)))) {
+        if (cu.loi) dem.loi++; else dem.cu++;
+        continue;
+      }
+      try {
+        const chu = (await taiGoogleDoc(id)).replace(/^\uFEFF/, '').replace(/[ \t]+$/gm, '').replace(/\n{3,}/g, '\n\n').trim();
+        const tieuDe = tieuDeLichTrinh(chu);
+        const file = `${tenFile(tieuDe)} [${id.slice(0, 10)}].md`;
+        if (cu?.file && cu.file !== file) fs.rmSync(path.join(goc, cu.file), { force: true });
+        fs.writeFileSync(path.join(goc, file), [
+          '---', DAU_HIEU, `nguon: "https://docs.google.com/document/d/${id}/edit"`, '---', '', `# ${tieuDe}`, '', chu, '',
+        ].join('\n'));
+        chiMuc[id] = { file, luc: Date.now() };
+        dem.moi++;
+      } catch {
+        // Giữ bản đã tải lần trước nếu có, chỉ đánh dấu để thử lại sau.
+        chiMuc[id] = cu?.file ? { ...cu, luc: Date.now() - TAI_LAI_SAU_MS + THU_LAI_LOI_SAU_MS } : { loi: true, luc: Date.now() };
+        dem.loi++;
+      }
+    }
+  };
+  await Promise.all(Array.from({ length: 4 }, tai));
+  fs.writeFileSync(fileChiMuc, JSON.stringify(chiMuc));
+  log?.(`Lịch trình: ${ids.size} tài liệu (${dem.moi} vừa tải, ${dem.cu} dùng bản đã tải, ${dem.loi} không tải được: cần bật chia sẻ "Bất kỳ ai có đường liên kết")`);
+  return new Map(Object.entries(chiMuc).filter(([k, v]) => ids.has(k) && v.file).map(([k, v]) => [k, `${THU_MUC_LICH_TRINH}/${v.file}`]));
+}
+
+/** Gắn đường dẫn file lịch trình đã tải vào sau mỗi link Google Docs, và rút gọn link. */
+export function ganLichTrinh(than, fileCua) {
+  return than.replace(LINK_GOOGLE_DOC, (_m, id) => {
+    const link = `https://docs.google.com/document/d/${id}/edit`;
+    return fileCua.has(id) ? `${link}; chi tiết: ${fileCua.get(id)}` : link;
+  });
+}
+
 /** Đồng bộ một nguồn. Trả về số trang tính đã ghi. */
-export async function dongBoNguon(ch, nguon) {
+export async function dongBoNguon(ch, nguon, { log } = {}) {
   const wb = new ExcelJS.Workbook();
   await wb.xlsx.load(await taiBangTinh(nguon.link));
   const ten = String(nguon.ten || 'Bảng tính').trim();
   const thuMuc = path.join(ch.bo_nao, nguon.luu_vao ? String(nguon.luu_vao) : path.join('Dữ liệu đồng bộ', tenFile(ten)));
   fs.mkdirSync(thuMuc, { recursive: true });
   const luc = thoiDiem();
-  const mucLuc = [];
-  const fileMoi = new Set([`0. Mục lục ${tenFile(ten)}.md`]);
+  const trang = [];
   for (const ws of wb.worksheets) {
     if (ws.state && ws.state !== 'visible') continue;
     const than = trangTinhSangMarkdown(docDong(ws));
-    if (!than.trim()) continue;
-    const file = `${tenFile(ws.name)}.md`;
-    fileMoi.add(file);
-    const nhomTour = [...than.matchAll(/^## (.+)$/gm)].map((m) => m[1]).slice(0, 12);
-    mucLuc.push(`- [[${file.replace(/\.md$/, '')}]]${nhomTour.length ? `: ${nhomTour.join('; ')}` : ''}`);
-    fs.writeFileSync(path.join(thuMuc, file), [
-      '---', DAU_HIEU, `nguon: "${ten}"`, `trang-tinh: "${ws.name.trim()}"`, `cap-nhat: "${luc}"`, '---', '',
-      `# ${ws.name.trim()}`, '',
+    if (than.trim()) trang.push({ ten: ws.name.trim(), file: `${tenFile(ws.name)}.md`, than });
+  }
+  if (nguon.tai_lich_trinh) {
+    const ids = new Set(trang.flatMap((t) => [...t.than.matchAll(LINK_GOOGLE_DOC)].map((m) => m[1])));
+    const fileCua = await taiLichTrinh(thuMuc, ids, log);
+    for (const t of trang) t.than = ganLichTrinh(t.than, fileCua);
+  }
+  const mucLuc = [];
+  const fileMoi = new Set([`0. Mục lục ${tenFile(ten)}.md`]);
+  for (const t of trang) {
+    fileMoi.add(t.file);
+    const nhomTour = [...t.than.matchAll(/^## (.+)$/gm)].map((m) => m[1]).slice(0, 12);
+    mucLuc.push(`- [[${t.file.replace(/\.md$/, '')}]]${nhomTour.length ? `: ${nhomTour.join('; ')}` : ''}`);
+    fs.writeFileSync(path.join(thuMuc, t.file), [
+      '---', DAU_HIEU, `nguon: "${ten}"`, `trang-tinh: "${t.ten}"`, `cap-nhat: "${luc}"`, '---', '',
+      `# ${t.ten}`, '',
       `> Tự động đồng bộ từ bảng tính "${ten}" lúc ${luc}. Đây là dữ liệu mới nhất; sửa trong bảng tính gốc, đừng sửa file này.`, '',
-      than, '',
+      t.than, '',
     ].join('\n'));
   }
   fs.writeFileSync(path.join(thuMuc, `0. Mục lục ${tenFile(ten)}.md`), [
     '---', DAU_HIEU, `cap-nhat: "${luc}"`, '---', '',
-    `# Mục lục: ${ten}`, '', `Đồng bộ lúc ${luc}. Mỗi trang tính là một file:`, '', ...mucLuc, '',
+    `# Mục lục: ${ten}`, '', `Đồng bộ lúc ${luc}. Mỗi trang tính là một file${nguon.tai_lich_trinh ? `; lịch trình chi tiết (tải từ Google Docs) nằm trong thư mục "${THU_MUC_LICH_TRINH}/", đường dẫn ghi sau chữ "chi tiết:" ở từng dòng` : ''}:`, '', ...mucLuc, '',
   ].join('\n'));
   // Ghi xong bản mới mới xoá file của lần trước mà trang tính đã bị đổi tên hoặc xoá.
   for (const f of fs.readdirSync(thuMuc)) {
@@ -163,7 +247,7 @@ export async function dongBoNguon(ch, nguon) {
 export async function dongBoTatCa(ch, { log = console.log } = {}) {
   for (const nguon of ch.dong_bo.nguon) {
     try {
-      const n = await dongBoNguon(ch, nguon);
+      const n = await dongBoNguon(ch, nguon, { log });
       log(`Đồng bộ "${nguon.ten}": ${n} trang tính.`);
     } catch (err) {
       log(`Đồng bộ "${nguon.ten}" lỗi: ${err.message}`);

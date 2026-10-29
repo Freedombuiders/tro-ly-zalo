@@ -71,3 +71,16 @@ test('đồng bộ lại: thay file cũ của trang tính đã đổi tên, gi�
   assert.deepEqual(fs.readdirSync(thuMuc).sort(), ['0. Mục lục Bảng giá.md', 'Ghi chú tay.md', 'Miền Bắc.md']);
   assert.match(fs.readFileSync(path.join(thuMuc, 'Miền Bắc.md'), 'utf8'), /- CODE: A1 \| TOUR: Hạ Long \| GIÁ: 3\.290\.000/);
 });
+
+test('lịch trình Google Docs: lấy tên tuyến làm tiêu đề, gắn đường dẫn file vào sau link và rút gọn link', async () => {
+  const { tieuDeLichTrinh, ganLichTrinh } = await import('../src/dong-bo.js');
+  assert.equal(tieuDeLichTrinh('d\n   DU LỊCH TRUNG QUỐC 2025\n\nKHÁM PHÁ VĂN HÓA\nHÀ NỘI – QUẢNG CHÂU – THÂM QUYẾN\nKhởi hành: 30/03'), 'HÀ NỘI – QUẢNG CHÂU – THÂM QUYẾN');
+  assert.equal(tieuDeLichTrinh('Lịch trình tham quan\nngày 1'), 'Lịch trình tham quan');
+  const id = '1sJR7d3dbhy2FXNi-VEU5Q8TvKZbe0Dbp';
+  const than = `- CODE: QC1 | LỊCH TRÌNH: CT 4N (https://docs.google.com/document/d/${id}/edit?usp=drive_link&ouid=1&rtpof=true&sd=true) | NOTE: x`;
+  assert.equal(
+    ganLichTrinh(than, new Map([[id, 'Lịch trình/HÀ NỘI – QUẢNG CHÂU [1sJR7d3dbh].md']])),
+    `- CODE: QC1 | LỊCH TRÌNH: CT 4N (https://docs.google.com/document/d/${id}/edit; chi tiết: Lịch trình/HÀ NỘI – QUẢNG CHÂU [1sJR7d3dbh].md) | NOTE: x`,
+  );
+  assert.equal(ganLichTrinh(than, new Map()), `- CODE: QC1 | LỊCH TRÌNH: CT 4N (https://docs.google.com/document/d/${id}/edit) | NOTE: x`);
+});
