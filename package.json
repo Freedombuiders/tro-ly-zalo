@@ -15,6 +15,7 @@
     "nhom": "node src/lenh.js nhom",
     "giao": "node src/lenh.js giao",
     "thu": "node src/lenh.js thu",
+    "gia-lap": "node src/lenh.js gia-lap",
     "dong-bo": "node src/lenh.js dong-bo",
     "kiem-tra": "node src/lenh.js kiem-tra",
     "test": "node --test"

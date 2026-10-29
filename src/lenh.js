@@ -7,6 +7,7 @@ import { FILE_CAU_HINH, FILE_TOM_TAT, docCauHinh, fileVaiTro, kiemTraCauHinh, ti
 import { chayLenh, hoiAgent } from './agent.js';
 import { chayBot, gio } from './bot.js';
 import { dongBoTatCa } from './dong-bo.js';
+import { KHACH_MAU, giaLap } from './gia-lap.js';
 import { coPhien, dangNhapQR, ketNoi, layNhom } from './zalo.js';
 
 const [lenh, ...thamSo] = process.argv.slice(2);
@@ -113,6 +114,42 @@ async function thu() {
   rl.close();
 }
 
+/** npm run gia-lap [id-agent] [vai-khách ...] [nhu cầu...] [--luot 5] */
+async function giaLapLenh() {
+  const ch = docCauHinh();
+  let idAgent = layCo('agent');
+  if (!idAgent && ch.agents.some((a) => a.id === thamSo[0])) idAgent = thamSo.shift();
+  const agent = timAgent(ch, idAgent || ch.mac_dinh.agent || ch.agents[0]?.id);
+  const soLuot = Number(layCo('luot')) || 5;
+  const dsVai = [];
+  while (thamSo.length && KHACH_MAU[thamSo[0]]) dsVai.push(thamSo.shift());
+  const nhuCau = thamSo.join(' ').trim();
+  if (!dsVai.length) dsVai.push('de-tinh', 'ky-tinh', 'mac-ca', 'kho-tinh', 'gai-bay');
+  console.log(`Giả lập ${dsVai.length} khách (${dsVai.join(', ')}) với ${agent.ten}, tối đa ${soLuot} lượt mỗi khách. Không gửi gì ra Zalo. Mất vài phút...\n`);
+  const kq = [];
+  const hang = [...dsVai];
+  await Promise.all(Array.from({ length: Math.min(3, hang.length) }, async () => {
+    for (let vai = hang.shift(); vai; vai = hang.shift()) {
+      try {
+        kq.push(await giaLap({ ch, agent, tenVai: vai, soLuot, nhuCau, log: (s) => console.log(s) }));
+      } catch (err) {
+        console.log(`[${vai}] lỗi: ${err.message}`);
+      }
+    }
+  }));
+  console.log('\n=== KẾT QUẢ (0-10) ===');
+  console.log('khách       tổng  dữ liệu  giống người  tình huống  dẫn chốt  an toàn');
+  for (const r of kq) {
+    const d = r.ketQua.diem;
+    console.log(`${r.tenVai.padEnd(11)} ${String(r.ketQua.tong).padEnd(5)} ${String(d.dung_du_lieu).padEnd(8)} ${String(d.giong_nguoi).padEnd(12)} ${String(d.xu_ly_tinh_huong).padEnd(11)} ${String(d.dan_den_chot).padEnd(9)} ${d.an_toan}`);
+  }
+  for (const r of kq) {
+    if (r.ketQua.loi.length) console.log(`\n[${r.tenVai}] lỗi:\n- ${r.ketQua.loi.join('\n- ')}`);
+    if (r.ketQua.goi_y_sua.length) console.log(`[${r.tenVai}] gợi ý sửa:\n- ${r.ketQua.goi_y_sua.join('\n- ')}`);
+  }
+  console.log(`\nHội thoại đầy đủ: data/gia-lap/`);
+}
+
 async function chay() {
   const ch = docCauHinh();
   const loi = kiemTraCauHinh(ch);
@@ -145,6 +182,7 @@ const LENH = {
   giao,
   thu,
   'dong-bo': () => dongBoTatCa(docCauHinh()),
+  'gia-lap': giaLapLenh,
   'kiem-tra': kiemTra,
 };
 
