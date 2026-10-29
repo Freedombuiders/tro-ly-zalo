@@ -1,0 +1,78 @@
+// Đọc và kiểm tra cau-hinh.yaml.
+import fs from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
+import YAML from 'yaml';
+
+export const GOC = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+export const THU_MUC_DATA = process.env.TRO_LY_DATA || path.join(GOC, 'data');
+export const FILE_CAU_HINH = path.join(GOC, 'cau-hinh.yaml');
+const FILE_MAU = path.join(GOC, 'cau-hinh.mau.yaml');
+
+/** Đường dẫn trong cấu hình có thể tuyệt đối hoặc tính từ thư mục dự án. */
+export function duongDan(p) {
+  if (!p) return '';
+  const s = String(p).trim().replace(/^~(?=$|[\\/])/, process.env.HOME || process.env.USERPROFILE || '~');
+  return path.isAbsolute(s) ? s : path.resolve(GOC, s);
+}
+
+export function docCauHinh() {
+  if (!fs.existsSync(FILE_CAU_HINH)) fs.copyFileSync(FILE_MAU, FILE_CAU_HINH);
+  let raw;
+  try {
+    raw = YAML.parse(fs.readFileSync(FILE_CAU_HINH, 'utf8')) ?? {};
+  } catch (err) {
+    throw new Error(`cau-hinh.yaml viết sai cú pháp YAML: ${err.message}`);
+  }
+  const ch = {
+    bo_nao: duongDan(raw.bo_nao || './bo-nao-mau'),
+    ai: raw.ai === 'codex' ? 'codex' : 'claude',
+    model: raw.model ? String(raw.model).trim() : '',
+    nhom_bao_cao: raw.nhom_bao_cao ? String(raw.nhom_bao_cao).trim() : '',
+    chat_rieng: raw.chat_rieng ? String(raw.chat_rieng).trim() : '',
+    agents: [],
+    dong_bo: {
+      moi_phut: Number(raw.dong_bo?.moi_phut) || 0,
+      nguon: Array.isArray(raw.dong_bo?.nguon) ? raw.dong_bo.nguon.filter((n) => n?.link) : [],
+    },
+  };
+  for (const a of Array.isArray(raw.agents) ? raw.agents : []) {
+    if (!a?.id) continue;
+    ch.agents.push({
+      id: String(a.id).trim(),
+      ten: a.ten ? String(a.ten).trim() : String(a.id),
+      nhom: (Array.isArray(a.nhom) ? a.nhom : a.nhom ? [a.nhom] : []).map((x) => String(x).trim()).filter(Boolean),
+      tra_loi_khi: a.tra_loi_khi === 'khi-duoc-goi' ? 'khi-duoc-goi' : 'moi-tin',
+      che_do: a.che_do === 'tu-gui' ? 'tu-gui' : 'nhap',
+      ai: a.ai === 'codex' || a.ai === 'claude' ? a.ai : ch.ai,
+      model: a.model ? String(a.model).trim() : a.ai && a.ai !== ch.ai ? '' : ch.model,
+    });
+  }
+  return ch;
+}
+
+/** Những lỗi cấu hình khiến trợ lý không chạy được. */
+export function kiemTraCauHinh(ch) {
+  const loi = [];
+  if (!fs.existsSync(ch.bo_nao)) loi.push(`Không tìm thấy thư mục bộ não: ${ch.bo_nao}`);
+  if (!ch.agents.length) loi.push('Chưa có agent nào trong cau-hinh.yaml');
+  const daGiao = new Map();
+  for (const a of ch.agents) {
+    if (!fs.existsSync(fileVaiTro(a.id))) loi.push(`Agent ${a.id} thiếu file agents/${a.id}/vai-tro.md`);
+    for (const n of a.nhom) {
+      if (daGiao.has(n)) loi.push(`Nhóm ${n} đang giao cho cả ${daGiao.get(n)} và ${a.id}: mỗi nhóm chỉ một agent`);
+      daGiao.set(n, a.id);
+    }
+  }
+  if (ch.chat_rieng && !ch.agents.some((a) => a.id === ch.chat_rieng)) loi.push(`chat_rieng trỏ tới agent không có: ${ch.chat_rieng}`);
+  return loi;
+}
+
+export const fileVaiTro = (id) => path.join(GOC, 'agents', id, 'vai-tro.md');
+export const FILE_TOM_TAT = path.join(GOC, 'agents', 'tom-tat-doanh-nghiep.md');
+
+export function timAgent(ch, id) {
+  const a = ch.agents.find((x) => x.id === id);
+  if (!a) throw new Error(`Không có agent "${id}". Các agent: ${ch.agents.map((x) => x.id).join(', ') || '(trống)'}`);
+  return a;
+}

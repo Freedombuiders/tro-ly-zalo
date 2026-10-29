@@ -1,0 +1,30 @@
+{
+  "name": "tro-ly-zalo",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Trợ lý Zalo đọc Bộ não số 2 của doanh nghiệp và chăm sóc các nhóm Zalo được chỉ định, chạy bằng Claude Code hoặc Codex.",
+  "author": "Tony Hoang (Freedom Builders, CAIO Rocket Tech Global)",
+  "license": "MIT",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node src/lenh.js chay",
+    "dang-nhap": "node src/lenh.js dang-nhap",
+    "nhom": "node src/lenh.js nhom",
+    "giao": "node src/lenh.js giao",
+    "thu": "node src/lenh.js thu",
+    "dong-bo": "node src/lenh.js dong-bo",
+    "kiem-tra": "node src/lenh.js kiem-tra",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "exceljs": "^4.4.0",
+    "yaml": "^2.9.1",
+    "zca-js": "2.1.2"
+  },
+  "overrides": {
+    "uuid": "^11.1.1"
+  }
+}

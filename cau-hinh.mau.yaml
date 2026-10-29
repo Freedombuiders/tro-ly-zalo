@@ -1,0 +1,55 @@
+# Cấu hình Trợ lý Zalo. Lần chạy đầu tiên file này được chép thành cau-hinh.yaml:
+# hãy sửa cau-hinh.yaml (hoặc nhờ Claude Code / Codex sửa giúp), đừng sửa file mẫu này.
+
+# Thư mục "Bộ não số 2" của doanh nghiệp. Đường dẫn tuyệt đối hoặc tính từ thư mục dự án.
+# Mặc định trỏ vào bộ não mẫu của công ty hư cấu "Du Lịch Sen Vàng".
+bo_nao: ./bo-nao-mau
+
+# AI trả lời tin nhắn: claude (Claude Code) hoặc codex (Codex). Cần cài và đăng nhập trước.
+ai: claude
+# Model. Để trống thì dùng mặc định của CLI. Claude: sonnet (khuyên dùng), haiku (nhanh, rẻ), opus.
+model: sonnet
+
+# Nhóm Zalo nhận cảnh báo khi agent cần người thật (khách muốn chốt, khiếu nại, câu hỏi chưa có dữ liệu).
+# Lấy id bằng lệnh: npm run nhom. Để trống thì chỉ in ra màn hình.
+nhom_bao_cao: ""
+
+# Tin nhắn riêng 1-1 gửi tới nick: id agent sẽ trả lời. Để trống thì không trả lời tin riêng.
+chat_rieng: ""
+
+# Danh sách agent. Mỗi agent có thư mục agents/<id>/vai-tro.md mô tả vai trò.
+agents:
+  - id: ai-sales-dai-ly
+    ten: Trợ lý Sales Sen Vàng
+    # id các nhóm Zalo agent này chăm sóc (lấy bằng: npm run nhom)
+    nhom: []
+    # moi-tin: đọc mọi tin, tự quyết trả lời hay im lặng
+    # khi-duoc-goi: chỉ trả lời khi được tag (@tên nick) hoặc có người trả lời vào tin của agent
+    tra_loi_khi: moi-tin
+    # nhap: chỉ in câu trả lời ra màn hình để bạn xem, không gửi. tu-gui: gửi thật vào nhóm.
+    che_do: nhap
+
+  - id: cskh-khach-hang
+    ten: Chăm sóc khách hàng Sen Vàng
+    nhom: []
+    tra_loi_khi: moi-tin
+    che_do: nhap
+
+  - id: tro-ly-noi-bo
+    ten: Trợ lý nội bộ Sen Vàng
+    nhom: []
+    tra_loi_khi: khi-duoc-goi
+    che_do: nhap
+
+# Đồng bộ bảng tính (Google Sheet hoặc file Excel) vào bộ não, để agent luôn đọc giá và số chỗ mới nhất.
+# Google Sheet phải bật chia sẻ "Bất kỳ ai có đường liên kết đều xem được".
+dong_bo:
+  moi_phut: 15
+  nguon:
+    - ten: Lịch khởi hành tour ghép
+      link: ./bo-nao-mau/1. Thu Thập/Lịch khởi hành tour ghép 2026.xlsx
+      luu_vao: 6. Company Brain OS/1. Sản Phẩm & R&D/Danh Mục Sản Phẩm/Lịch khởi hành
+
+    - ten: Bảng giá nhà cung cấp
+      link: ./bo-nao-mau/1. Thu Thập/Bảng giá nhà cung cấp 2026.xlsx
+      luu_vao: 6. Company Brain OS/5. Vận Hành/Nhà Cung Cấp/Bảng giá

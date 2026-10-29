@@ -1,0 +1,46 @@
+import assert from 'node:assert/strict';
+import { test } from 'node:test';
+import { giaTriO, linkTaiVe, trangTinhSangMarkdown } from '../src/dong-bo.js';
+
+test('link Google Sheet đổi thành link tải xlsx', () => {
+  assert.equal(
+    linkTaiVe('https://docs.google.com/spreadsheets/d/1u8HhQcn8iGpj_x-Y/edit?gid=1983950487#gid=1983950487'),
+    'https://docs.google.com/spreadsheets/d/1u8HhQcn8iGpj_x-Y/export?format=xlsx',
+  );
+  assert.equal(linkTaiVe('./du-lieu/bang-gia.xlsx'), null);
+});
+
+test('định dạng ô: ngày, tháng, tiền, link', () => {
+  const ngay = new Date(Date.UTC(2026, 10, 21));
+  assert.equal(giaTriO(ngay, 'NGÀY KH'), '21/11/2026');
+  assert.equal(giaTriO(new Date(Date.UTC(2026, 4, 1)), 'THÁNG'), 'Tháng 5/2026');
+  assert.equal(giaTriO(12990000), '12.990.000');
+  assert.equal(giaTriO(1.0), '1');
+  assert.equal(giaTriO({ text: 'CT 5N4D', hyperlink: 'https://x.vn/a' }), 'CT 5N4D (https://x.vn/a)');
+  assert.equal(giaTriO({ formula: 'A1*2', result: 2000000 }), '2.000.000');
+  assert.equal(giaTriO('dòng 1\ndòng 2'), 'dòng 1 / dòng 2');
+});
+
+test('trang tính: tìm dòng tiêu đề, nhóm tour thành mục, điền tiếp ô trống trừ cột ghi chú/chỗ', () => {
+  const md = trangTinhSangMarkdown([
+    ['TOUR LỆ GIANG 2026'],
+    ['LƯU Ý: CHECK LẠI SỐ CHỖ'],
+    ['THÁNG', 'CODE', 'TOUR', 'NGÀY KH', 'GIÁ TOUR', 'CHỖ CÒN LẠI', 'NOTE'],
+    ['HÀ NỘI – LỆ GIANG 5N4D'],
+    [new Date(Date.UTC(2026, 10, 1)), 'LG1', 'HÀ NỘI – LỆ GIANG', new Date(Date.UTC(2026, 10, 10)), 12990000, 0, 'ĐÓNG ĐOÀN'],
+    [null, 'LG2', null, new Date(Date.UTC(2026, 10, 24)), 12990000, 8, null],
+  ]);
+  assert.match(md, /^TOUR LỆ GIANG 2026$/m);
+  assert.match(md, /^## HÀ NỘI – LỆ GIANG 5N4D$/m);
+  assert.match(md, /^- THÁNG: Tháng 11\/2026 \| CODE: LG1 \| TOUR: HÀ NỘI – LỆ GIANG \| NGÀY KH: 10\/11\/2026 \| GIÁ TOUR: 12\.990\.000 \| CHỖ CÒN LẠI: 0 \| NOTE: ĐÓNG ĐOÀN$/m);
+  const lg2 = md.split('\n').find((l) => l.includes('CODE: LG2'));
+  assert.match(lg2, /THÁNG: Tháng 11\/2026/);
+  assert.match(lg2, /TOUR: HÀ NỘI – LỆ GIANG/);
+  assert.match(lg2, /CHỖ CÒN LẠI: 8/);
+  assert.doesNotMatch(lg2, /ĐÓNG ĐOÀN/);
+});
+
+test('trang tính không có bảng thì giữ nguyên các dòng chữ', () => {
+  const md = trangTinhSangMarkdown([['Hotline', '0123 456 789'], ['Website', 'example.com']]);
+  assert.equal(md, 'Hotline | 0123 456 789\n\nWebsite | example.com');
+});
