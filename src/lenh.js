@@ -54,13 +54,13 @@ async function nhom() {
   const giao = new Map(ch.agents.flatMap((a) => a.nhom.map((n) => [n, a.id])));
   console.log(`Nick có ${ds.length} nhóm:\n`);
   for (const g of ds) console.log(`${g.id}  ${g.ten} (${g.so_thanh_vien} người)${giao.has(g.id) ? `  ← ${giao.get(g.id)}` : ''}`);
-  console.log('\nGiao nhóm cho agent: npm run giao -- <id-agent> <id-nhóm> [id-nhóm khác...]');
+  console.log('\nGiao nhóm cho agent: npm run giao <id-agent> <id-nhóm> [id-nhóm khác...]');
 }
 
 /** Thêm nhóm vào agent trong cau-hinh.yaml (giữ nguyên chú thích). */
 function giao() {
   const [idAgent, ...dsNhom] = thamSo;
-  if (!idAgent || !dsNhom.length) throw new Error('Cú pháp: npm run giao -- <id-agent> <id-nhóm> [id-nhóm khác...]');
+  if (!idAgent || !dsNhom.length) throw new Error('Cú pháp: npm run giao <id-agent> <id-nhóm> [id-nhóm khác...]');
   docCauHinh();
   const doc = YAML.parseDocument(fs.readFileSync(FILE_CAU_HINH, 'utf8'));
   const agents = doc.get('agents');
@@ -78,7 +78,10 @@ function giao() {
 
 async function thu() {
   const ch = docCauHinh();
-  const agent = timAgent(ch, layCo('agent') || ch.chat_rieng || ch.agents[0]?.id);
+  // Cho phép "npm run thu <id-agent> ..." vì PowerShell nuốt dấu "--" của npm.
+  let idAgent = layCo('agent');
+  if (!idAgent && ch.agents.some((a) => a.id === thamSo[0])) idAgent = thamSo.shift();
+  const agent = timAgent(ch, idAgent || ch.chat_rieng || ch.agents[0]?.id);
   const ten = layCo('ten') ?? 'Khách';
   const cauHoi = thamSo.join(' ').trim();
   const lichSu = [];
@@ -137,7 +140,7 @@ const LENH = {
 };
 
 if (!LENH[lenh]) {
-  console.log('Lệnh: npm start | npm run dang-nhap | npm run nhom | npm run giao -- <agent> <nhóm> | npm run thu -- [--agent id] ["câu hỏi"] | npm run dong-bo | npm run kiem-tra');
+  console.log('Lệnh: npm start | npm run dang-nhap | npm run nhom | npm run giao <agent> <nhóm> | npm run thu [id-agent] ["câu hỏi"] | npm run dong-bo | npm run kiem-tra');
   process.exit(1);
 }
 try {

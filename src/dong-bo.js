@@ -130,18 +130,15 @@ export async function dongBoNguon(ch, nguon) {
   const ten = String(nguon.ten || 'Bảng tính').trim();
   const thuMuc = path.join(ch.bo_nao, nguon.luu_vao ? String(nguon.luu_vao) : path.join('Dữ liệu đồng bộ', tenFile(ten)));
   fs.mkdirSync(thuMuc, { recursive: true });
-  // Xoá các file do lần đồng bộ trước tạo (trang tính có thể đã bị đổi tên hoặc xoá).
-  for (const f of fs.readdirSync(thuMuc)) {
-    const day = path.join(thuMuc, f);
-    if (f.endsWith('.md') && fs.readFileSync(day, 'utf8').includes(DAU_HIEU)) fs.rmSync(day);
-  }
   const luc = thoiDiem();
   const mucLuc = [];
+  const fileMoi = new Set([`0. Mục lục ${tenFile(ten)}.md`]);
   for (const ws of wb.worksheets) {
     if (ws.state && ws.state !== 'visible') continue;
     const than = trangTinhSangMarkdown(docDong(ws));
     if (!than.trim()) continue;
     const file = `${tenFile(ws.name)}.md`;
+    fileMoi.add(file);
     const nhomTour = [...than.matchAll(/^## (.+)$/gm)].map((m) => m[1]).slice(0, 12);
     mucLuc.push(`- [[${file.replace(/\.md$/, '')}]]${nhomTour.length ? `: ${nhomTour.join('; ')}` : ''}`);
     fs.writeFileSync(path.join(thuMuc, file), [
@@ -155,6 +152,11 @@ export async function dongBoNguon(ch, nguon) {
     '---', DAU_HIEU, `cap-nhat: "${luc}"`, '---', '',
     `# Mục lục: ${ten}`, '', `Đồng bộ lúc ${luc}. Mỗi trang tính là một file:`, '', ...mucLuc, '',
   ].join('\n'));
+  // Ghi xong bản mới mới xoá file của lần trước mà trang tính đã bị đổi tên hoặc xoá.
+  for (const f of fs.readdirSync(thuMuc)) {
+    const day = path.join(thuMuc, f);
+    if (f.endsWith('.md') && !fileMoi.has(f) && fs.readFileSync(day, 'utf8').includes(DAU_HIEU)) fs.rmSync(day);
+  }
   return mucLuc.length;
 }
 

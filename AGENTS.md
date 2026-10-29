@@ -17,11 +17,11 @@ Repo này là **Trợ lý Zalo**: một chương trình Node nhỏ chạy trên 
 
 ```bash
 npm run kiem-tra                         # kiểm tra Node, CLI, cấu hình, phiên Zalo
-npm run thu -- --agent <id> "câu hỏi"    # hỏi thử agent, không cần Zalo (bỏ câu hỏi để trò chuyện liên tục)
+npm run thu <id-agent> "câu hỏi"    # hỏi thử agent, không cần Zalo (bỏ câu hỏi để trò chuyện liên tục)
 npm run dong-bo                          # đồng bộ Google Sheet / Excel vào bộ não
 npm run dang-nhap                        # đăng nhập Zalo bằng QR (data/qr-zalo.png)
 npm run nhom                             # danh sách nhóm và id
-npm run giao -- <id-agent> <id-nhóm>...  # giao nhóm cho agent
+npm run giao <id-agent> <id-nhóm>...  # giao nhóm cho agent
 npm start                                # chạy trợ lý (Ctrl+C để dừng)
 npm test
 ```

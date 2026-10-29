@@ -47,10 +47,10 @@ Rồi dán câu lệnh ở trên.
 
 ```bash
 npm install
-npm run thu -- --agent ai-sales-dai-ly "Lệ Giang tháng 11 còn chỗ không em? Cho anh mã tour với hoa hồng"
-npm run thu -- --agent cskh-khach-hang "Nhà chị 2 người lớn 1 bé 8 tuổi muốn đi Nhật tháng 3, giá sao em?"
-npm run thu -- --agent tro-ly-noi-bo "Lên proposal Hạ Long 2N1Đ du thuyền 5 sao cho đoàn 30 khách"
-npm run thu -- --agent cskh-khach-hang          # trò chuyện liên tục, gõ "thoat" để dừng
+npm run thu ai-sales-dai-ly "Lệ Giang tháng 11 còn chỗ không em? Cho anh mã tour với hoa hồng"
+npm run thu cskh-khach-hang "Nhà chị 2 người lớn 1 bé 8 tuổi muốn đi Nhật tháng 3, giá sao em?"
+npm run thu tro-ly-noi-bo "Lên proposal Hạ Long 2N1Đ du thuyền 5 sao cho đoàn 30 khách"
+npm run thu cskh-khach-hang          # trò chuyện liên tục, gõ "thoat" để dừng
 ```
 
 Bộ não mẫu `bo-nao-mau/` là của công ty du lịch hư cấu **Sen Vàng**, có ba agent mẫu:
@@ -86,11 +86,11 @@ Giá, lịch và số chỗ nằm trong hai file Excel ở `bo-nao-mau/1. Thu Th
 | Lệnh | Việc |
 |---|---|
 | `npm run kiem-tra` | Kiểm tra Node, Claude Code/Codex, cấu hình, phiên Zalo |
-| `npm run thu -- --agent <id> "câu hỏi"` | Hỏi thử agent, không cần Zalo. Bỏ câu hỏi để trò chuyện liên tục. `--ten "Chị Lan"` để đặt tên người hỏi |
+| `npm run thu <id-agent> "câu hỏi"` | Hỏi thử agent, không cần Zalo. Bỏ câu hỏi để trò chuyện liên tục |
 | `npm run dong-bo` | Đồng bộ Google Sheet / Excel vào bộ não |
 | `npm run dang-nhap` | Đăng nhập Zalo bằng mã QR |
 | `npm run nhom` | Danh sách nhóm Zalo và id |
-| `npm run giao -- <id-agent> <id-nhóm>` | Giao nhóm cho agent |
+| `npm run giao <id-agent> <id-nhóm>` | Giao nhóm cho agent |
 | `npm start` | Chạy trợ lý. `Ctrl+C` để dừng |
 
 ## Cấu hình: `cau-hinh.yaml`

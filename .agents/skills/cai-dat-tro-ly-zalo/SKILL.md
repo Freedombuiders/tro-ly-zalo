@@ -66,10 +66,10 @@ Hỏi gộp một lần, đánh số, mỗi câu có gợi ý trả lời mặc 
 Với từng agent, thử 3 đến 5 câu điển hình (lấy từ câu hỏi thường gặp trong bộ não hoặc người dùng đưa), một câu chào hỏi (phải IM LẶNG) và một câu chắc chắn không có trong bộ não (phải CHUYỂN NGƯỜI THẬT, không bịa):
 
 ```bash
-npm run thu -- --agent <id> --ten "Chị Lan" "câu hỏi"
+npm run thu <id-agent> "câu hỏi"
 ```
 
-Mỗi lượt mất 10–60 giây. Chép nguyên văn câu trả lời cho người dùng xem. Họ muốn chỉnh giọng hay nội dung thì sửa `vai-tro.md` (cách nói) hoặc bộ não (dữ liệu), rồi thử lại. Người dùng muốn tự trò chuyện thử: bảo họ mở terminal khác, chạy `npm run thu -- --agent <id>`.
+Mỗi lượt mất 10–60 giây. Chép nguyên văn câu trả lời cho người dùng xem. Họ muốn chỉnh giọng hay nội dung thì sửa `vai-tro.md` (cách nói) hoặc bộ não (dữ liệu), rồi thử lại. Người dùng muốn tự trò chuyện thử: bảo họ mở terminal khác, chạy `npm run thu <id-agent>`.
 
 ## 7. Đăng nhập Zalo
 
@@ -85,7 +85,7 @@ Chạy nền (hoặc chờ tối đa 5 phút). Lệnh lưu ảnh QR ở `data/qr
 
 ```bash
 npm run nhom                                   # danh sách nhóm và id
-npm run giao -- <id-agent> <id-nhóm> [id-nhóm khác...]
+npm run giao <id-agent> <id-nhóm> [id-nhóm khác...]
 ```
 
 Cho người dùng chọn nhóm theo tên, bạn tự tra id. Có nhóm quản lý để nhận cảnh báo thì ghi id vào `nhom_bao_cao`. Muốn agent trả lời cả tin nhắn riêng 1-1 thì ghi id agent vào `chat_rieng`.

@@ -44,3 +44,30 @@ test('trang tính không có bảng thì giữ nguyên các dòng chữ', () => 
   const md = trangTinhSangMarkdown([['Hotline', '0123 456 789'], ['Website', 'example.com']]);
   assert.equal(md, 'Hotline | 0123 456 789\n\nWebsite | example.com');
 });
+
+test('đồng bộ lại: thay file cũ của trang tính đã đổi tên, giữ nguyên ghi chú viết tay', async () => {
+  const fs = await import('node:fs');
+  const os = await import('node:os');
+  const path = await import('node:path');
+  const { default: ExcelJS } = await import('exceljs');
+  const { dongBoNguon } = await import('../src/dong-bo.js');
+  const goc = fs.mkdtempSync(path.join(os.tmpdir(), 'dong-bo-'));
+  const xlsx = path.join(goc, 'bang.xlsx');
+  const ghi = async (tenTrang) => {
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet(tenTrang);
+    ws.addRow(['CODE', 'TOUR', 'GIÁ']);
+    ws.addRow(['A1', 'Hạ Long', 3290000]);
+    await wb.xlsx.writeFile(xlsx);
+  };
+  const ch = { bo_nao: path.join(goc, 'bo-nao') };
+  const nguon = { ten: 'Bảng giá', link: xlsx, luu_vao: 'Giá' };
+  const thuMuc = path.join(ch.bo_nao, 'Giá');
+  await ghi('Nội địa');
+  assert.equal(await dongBoNguon(ch, nguon), 1);
+  fs.writeFileSync(path.join(thuMuc, 'Ghi chú tay.md'), 'của người dùng');
+  await ghi('Miền Bắc');
+  await dongBoNguon(ch, nguon);
+  assert.deepEqual(fs.readdirSync(thuMuc).sort(), ['0. Mục lục Bảng giá.md', 'Ghi chú tay.md', 'Miền Bắc.md']);
+  assert.match(fs.readFileSync(path.join(thuMuc, 'Miền Bắc.md'), 'utf8'), /- CODE: A1 \| TOUR: Hạ Long \| GIÁ: 3\.290\.000/);
+});
