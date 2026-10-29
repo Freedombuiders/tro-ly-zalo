@@ -29,7 +29,7 @@ export function docCauHinh() {
     ai: raw.ai === 'codex' ? 'codex' : 'claude',
     model: raw.model ? String(raw.model).trim() : '',
     nhom_bao_cao: raw.nhom_bao_cao ? String(raw.nhom_bao_cao).trim() : '',
-    chat_rieng: raw.chat_rieng ? String(raw.chat_rieng).trim() : '',
+    mac_dinh: docMacDinh(raw),
     agents: [],
     dong_bo: {
       moi_phut: Number(raw.dong_bo?.moi_phut) || 0,
@@ -51,6 +51,21 @@ export function docCauHinh() {
   return ch;
 }
 
+/** Agent mặc định cho tin riêng 1-1 và cho các nhóm chưa giao khi được tag. Vẫn đọc "chat_rieng" của cấu hình cũ. */
+function docMacDinh(raw) {
+  const m = raw.mac_dinh;
+  if (m && typeof m === 'object') {
+    return {
+      agent: m.agent ? String(m.agent).trim() : '',
+      chat_rieng: m.chat_rieng !== false,
+      nhom_khi_duoc_tag: m.nhom_khi_duoc_tag !== false,
+    };
+  }
+  if (typeof m === 'string' && m.trim()) return { agent: m.trim(), chat_rieng: true, nhom_khi_duoc_tag: true };
+  if (raw.chat_rieng) return { agent: String(raw.chat_rieng).trim(), chat_rieng: true, nhom_khi_duoc_tag: false };
+  return { agent: '', chat_rieng: false, nhom_khi_duoc_tag: false };
+}
+
 /** Những lỗi cấu hình khiến trợ lý không chạy được. */
 export function kiemTraCauHinh(ch) {
   const loi = [];
@@ -64,7 +79,7 @@ export function kiemTraCauHinh(ch) {
       daGiao.set(n, a.id);
     }
   }
-  if (ch.chat_rieng && !ch.agents.some((a) => a.id === ch.chat_rieng)) loi.push(`chat_rieng trỏ tới agent không có: ${ch.chat_rieng}`);
+  if (ch.mac_dinh.agent && !ch.agents.some((a) => a.id === ch.mac_dinh.agent)) loi.push(`mac_dinh.agent trỏ tới agent không có: ${ch.mac_dinh.agent}`);
   return loi;
 }
 

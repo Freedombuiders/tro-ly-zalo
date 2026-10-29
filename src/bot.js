@@ -11,6 +11,7 @@ export const CHO_GOM_TIN_MS = { nhom: 6000, rieng: 3000 }; // đợi khách nh�
 const NHUONG_NGUOI_THAT_MS = 30 * 60 * 1000; // nhân viên vừa nhắn bằng nick này thì agent nhường 30 phút
 const TOI_DA_CHAY_CUNG_LUC = 2;
 const TOI_DA_TIN_MOI_GIO = 60;
+const NHAC_DANG_SOAN_MS = 4000; // bong bóng "đang soạn tin" của Zalo tắt sau vài giây, phải gửi lại
 
 export const gio = () => new Date(Date.now() + 7 * 3600 * 1000).toISOString().slice(11, 19);
 const cat = (s, n = 160) => (s.length > n ? `${s.slice(0, n)}…` : s).replace(/\n/g, ' ⏎ ');
@@ -53,7 +54,8 @@ export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgen
   const toi = String(await api.getOwnId());
   const agentCuaNhom = new Map();
   for (const a of ch.agents) for (const n of a.nhom) agentCuaNhom.set(n, a);
-  const agentRieng = ch.chat_rieng ? timAgent(ch, ch.chat_rieng) : null;
+  const md = ch.mac_dinh;
+  const agentMacDinh = md.agent ? timAgent(ch, md.agent) : null;
   const khoa = taoKhoa(TOI_DA_CHAY_CUNG_LUC);
 
   const hang = new Map(); // threadId -> { tin: [], hen, dangChay, chayLai }
@@ -103,6 +105,14 @@ export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgen
     const idMoi = new Set(tinMoi.map((t) => t.id));
     const lichSu = docLichSu(threadId, 40).filter((t) => !idMoi.has(t.id)).slice(-25);
     const duocGoi = tinMoi.some((t) => t.duocGoi);
+    const nhap = agent.che_do !== 'tu-gui';
+    // Hiện "đang soạn tin" suốt lúc agent nghĩ khi gần như chắc sẽ trả lời (tin riêng, hoặc được tag trong nhóm).
+    let dangSoan;
+    if (!nhap && (loai === ThreadType.User || duocGoi)) {
+      const soan = () => Promise.resolve(api.sendTypingEvent?.(threadId, loai)).catch(() => {});
+      soan();
+      dangSoan = setInterval(soan, NHAC_DANG_SOAN_MS);
+    }
     try {
       const kq = await khoa(() => hoi({
         ch, agent,
@@ -111,8 +121,8 @@ export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgen
           ghiChu: loai === ThreadType.Group && duocGoi ? 'Trong tin mới có người tag bạn hoặc trả lời vào tin của bạn.' : '',
         },
       }));
+      clearInterval(dangSoan);
       const nhan = { tra_loi: 'TRẢ LỜI', bo_qua: 'IM LẶNG', chuyen_nguoi: 'CHUYỂN NGƯỜI THẬT' }[kq.hanh_dong];
-      const nhap = agent.che_do !== 'tu-gui';
       log(`[${gio()}] → ${agent.ten} (${kq.giay}s) ${nhan}${nhap && kq.tin_nhan && kq.hanh_dong !== 'bo_qua' ? ' [NHÁP, chưa gửi]' : ''}`);
       if (kq.tin_nhan && kq.hanh_dong !== 'bo_qua') log(`   ${kq.tin_nhan.replace(/\n/g, '\n   ')}`);
       if (kq.ly_do) log(`   (lý do: ${cat(kq.ly_do)})`);
@@ -133,6 +143,7 @@ export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgen
     } catch (err) {
       log(`[${gio()}] ✖ ${agent.ten} lỗi: ${err.message}`);
     } finally {
+      clearInterval(dangSoan);
       h.dangChay = false;
       if (h.chayLai || h.tin.length) {
         h.chayLai = false;
@@ -145,8 +156,11 @@ export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgen
     try {
       const threadId = String(m.threadId);
       const laNhom = m.type === ThreadType.Group;
-      const agent = laNhom ? agentCuaNhom.get(threadId) : agentRieng;
-      const noi_dung = noiDungTin(m.data);
+      let agent = laNhom ? agentCuaNhom.get(threadId) : md.chat_rieng ? agentMacDinh : null;
+      // Nhóm chưa giao: agent mặc định chỉ trả lời khi được tag, và không ghi log từng tin của nhóm.
+      const nhomMacDinh = laNhom && !agent && md.nhom_khi_duoc_tag && Boolean(agentMacDinh);
+      if (nhomMacDinh) agent = agentMacDinh;
+      let noi_dung = noiDungTin(m.data);
       const ts = Number(m.data.ts) || Date.now();
       const id = String(m.data.msgId || m.data.cliMsgId || ts);
 
@@ -158,7 +172,9 @@ export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgen
         return;
       }
 
-      if (m.isSelf) {
+      // "#thu <câu hỏi>" gõ từ chính nick này: đóng vai khách để tự thử agent.
+      const tinThu = m.isSelf ? noi_dung.match(/^\s*[#/]thu\s+([\s\S]+)/i) : null;
+      if (m.isSelf && !tinThu) {
         const i = botVuaGui.findIndex((b) => b.threadId === threadId && b.noi_dung.trim() === noi_dung.trim());
         if (i >= 0) {
           botVuaGui.splice(i, 1);
@@ -168,19 +184,24 @@ export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgen
         ghiTin(threadId, { id, ts, ten: 'Nhân viên (nick này)', noi_dung, la_bot: false });
         nhuongDen.set(threadId, Date.now() + NHUONG_NGUOI_THAT_MS);
         hang.get(threadId)?.tin.splice(0);
-        log(`[${gio()}] Nhân viên vừa nhắn trong ${threadId}, agent nhường 30 phút.`);
+        if (!nhomMacDinh) log(`[${gio()}] Bạn vừa nhắn bằng nick này trong ${laNhom ? `nhóm "${await tenNhom(api, threadId)}"` : 'tin riêng'}, agent nhường 30 phút. (Muốn tự thử thì gõ: #thu <câu hỏi>)`);
         return;
       }
+      if (tinThu) {
+        nhuongDen.delete(threadId);
+        noi_dung = tinThu[1].trim();
+      }
 
-      const ten = m.data.dName || 'Khách';
+      const ten = tinThu ? 'Khách (thử)' : m.data.dName || 'Khách';
       ghiTin(threadId, { id, ts, ten, noi_dung, la_bot: false });
+      const duocGoi = !laNhom || Boolean(tinThu)
+        || (m.data.mentions ?? []).some((x) => String(x.uid) === toi)
+        || String(m.data.quote?.ownerId ?? '') === toi;
+      if (nhomMacDinh && !duocGoi) return;
       const noiChat = laNhom ? `nhóm Zalo "${await tenNhom(api, threadId)}"` : `tin nhắn riêng Zalo với "${ten}"`;
       log(`[${gio()}] ${laNhom ? noiChat : 'Tin riêng'} · ${ten}: ${cat(noi_dung)}`);
 
       if (nhuongDen.get(threadId) > Date.now()) return;
-      const duocGoi = !laNhom
-        || (m.data.mentions ?? []).some((x) => String(x.uid) === toi)
-        || String(m.data.quote?.ownerId ?? '') === toi;
       if (agent.tra_loi_khi === 'khi-duoc-goi' && !duocGoi) return;
 
       if (!hang.has(threadId)) hang.set(threadId, { tin: [], hen: null, dangChay: false, chayLai: false });

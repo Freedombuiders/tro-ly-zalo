@@ -88,7 +88,9 @@ npm run nhom                                   # danh sách nhóm và id
 npm run giao <id-agent> <id-nhóm> [id-nhóm khác...]
 ```
 
-Cho người dùng chọn nhóm theo tên, bạn tự tra id. Có nhóm quản lý để nhận cảnh báo thì ghi id vào `nhom_bao_cao`. Muốn agent trả lời cả tin nhắn riêng 1-1 thì ghi id agent vào `chat_rieng`.
+Cho người dùng chọn nhóm theo tên, bạn tự tra id. Có nhóm quản lý để nhận cảnh báo thì ghi id vào `nhom_bao_cao`.
+
+Mặc định (`mac_dinh` trong `cau-hinh.yaml`), một agent trực trả lời **mọi tin nhắn riêng 1-1** và **mọi nhóm chưa giao khi có người tag nick**. Đặt `mac_dinh.agent` là agent chăm khách vừa tạo. Người dùng không muốn thì đặt `chat_rieng: false` hoặc `nhom_khi_duoc_tag: false`.
 
 ## 9. Chạy
 
@@ -98,6 +100,6 @@ Bảo người dùng mở **một terminal mới** trong thư mục dự án và
 npm start
 ```
 
-Ban đầu mọi agent ở chế độ **nháp** (`che_do: nhap`): câu trả lời chỉ in ra terminal, chưa gửi vào nhóm. Nhắn thử vào nhóm từ một nick khác, xem terminal. Khi người dùng hài lòng và **nói rõ** muốn bật gửi thật: đổi `che_do: tu-gui` cho agent đó trong `cau-hinh.yaml`, rồi khởi động lại (`Ctrl+C`, `npm start`).
+Ban đầu mọi agent ở chế độ **nháp** (`che_do: nhap`): câu trả lời chỉ in ra terminal, chưa gửi vào nhóm. Thử bằng một nick khác, hoặc từ chính điện thoại của nick này gõ `#thu <câu hỏi>` (tin của chính nick không có `#thu` được coi là nhân viên trả lời, agent nhường 30 phút). Khi người dùng hài lòng và **nói rõ** muốn bật gửi thật: đổi `che_do: tu-gui` cho agent đó trong `cau-hinh.yaml`, rồi khởi động lại (`Ctrl+C`, `npm start`).
 
 Kết thúc bằng tóm tắt: agent nào, chăm nhóm nào, chế độ gì; câu hỏi chưa có dữ liệu được ghi vào `Chờ Duyệt/Câu hỏi agent chưa trả lời được.md` trong bộ não để bổ sung dần.

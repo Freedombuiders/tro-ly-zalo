@@ -102,7 +102,10 @@ bo_nao: "/Users/ban/Documents/Bộ não số 2"   # thư mục bộ não
 ai: claude                                   # claude hoặc codex
 model: sonnet                                # sonnet (khuyên dùng), haiku (nhanh, rẻ)
 nhom_bao_cao: "1234567890"                   # nhóm quản lý nhận cảnh báo (tuỳ chọn)
-chat_rieng: ""                               # id agent trả lời tin nhắn riêng 1-1 (tuỳ chọn)
+mac_dinh:                                    # agent trực mặc định
+  agent: cskh-khach-hang
+  chat_rieng: true                           # trả lời mọi tin nhắn riêng 1-1
+  nhom_khi_duoc_tag: true                    # nhóm chưa giao: trả lời khi có người tag nick
 agents:
   - id: cskh-khach-hang                      # vai trò ở agents/cskh-khach-hang/vai-tro.md
     ten: Chăm sóc khách hàng
@@ -122,9 +125,11 @@ Agent hiểu doanh nghiệp qua ba lớp: `src/luat-chung.md` (luật chung, gi�
 ## An toàn
 
 - Mặc định **nháp**: không gửi gì cho đến khi bạn đổi `che_do: tu-gui`.
+- Mặc định agent trực trả lời **mọi tin nhắn riêng 1-1** và, ở các nhóm chưa giao cho agent nào, **chỉ khi có người tag nick**. Nhóm đã giao thì theo `tra_loi_khi` của agent đó.
+- Tự thử từ chính điện thoại của nick: gõ `#thu <câu hỏi>` vào nhóm hoặc tin riêng, agent coi như khách hỏi.
 - Agent chỉ được **đọc** bộ não: không sửa file, không lên mạng. Không đọc `Me.md` (hồ sơ riêng của chủ).
 - Nhân viên vừa nhắn bằng chính nick Zalo đó thì agent **nhường 30 phút** trong nhóm ấy.
-- Tối đa 60 tin trả lời mỗi giờ, có hiệu ứng "đang soạn tin" và độ trễ như người thật.
+- Tối đa 60 tin trả lời mỗi giờ. Khách thấy bong bóng "đang soạn tin" trong lúc agent tra cứu (tin riêng, hoặc khi được tag) và độ trễ như người thật.
 - Câu khách hỏi mà bộ não chưa có được ghi vào `Chờ Duyệt/Câu hỏi agent chưa trả lời được.md` trong bộ não để bạn bổ sung.
 - Phiên Zalo và lịch sử tin nhắn chỉ nằm trong thư mục `data/` trên máy bạn.
 

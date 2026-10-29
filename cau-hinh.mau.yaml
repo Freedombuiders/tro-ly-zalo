@@ -14,8 +14,13 @@ model: sonnet
 # Lấy id bằng lệnh: npm run nhom. Để trống thì chỉ in ra màn hình.
 nhom_bao_cao: ""
 
-# Tin nhắn riêng 1-1 gửi tới nick: id agent sẽ trả lời. Để trống thì không trả lời tin riêng.
-chat_rieng: ""
+# Agent mặc định: trả lời mọi tin nhắn riêng 1-1, và ở mọi nhóm chưa giao cho agent nào
+# thì trả lời khi có người tag nick (@tên nick) hoặc trả lời vào tin của agent.
+# Chế độ nháp/tự gửi theo che_do của agent đó. Để trống agent thì tắt.
+mac_dinh:
+  agent: cskh-khach-hang
+  chat_rieng: true
+  nhom_khi_duoc_tag: true
 
 # Danh sách agent. Mỗi agent có thư mục agents/<id>/vai-tro.md mô tả vai trò.
 agents:

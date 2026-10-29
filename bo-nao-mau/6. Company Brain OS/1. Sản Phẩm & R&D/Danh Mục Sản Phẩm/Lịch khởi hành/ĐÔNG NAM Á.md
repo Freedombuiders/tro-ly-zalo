@@ -2,12 +2,12 @@
 dong-bo: tu-dong
 nguon: "Lịch khởi hành tour ghép"
 trang-tinh: "ĐÔNG NAM Á"
-cap-nhat: "21:46 29/10/2026"
+cap-nhat: "22:01 29/10/2026"
 ---
 
 # ĐÔNG NAM Á
 
-> Tự động đồng bộ từ bảng tính "Lịch khởi hành tour ghép" lúc 21:46 29/10/2026. Đây là dữ liệu mới nhất; sửa trong bảng tính gốc, đừng sửa file này.
+> Tự động đồng bộ từ bảng tính "Lịch khởi hành tour ghép" lúc 22:01 29/10/2026. Đây là dữ liệu mới nhất; sửa trong bảng tính gốc, đừng sửa file này.
 
 TOUR GHÉP ĐÔNG NAM Á 2026
 LƯU Ý: CTV/ĐẠI LÝ GỬI CODE TOUR CHO SALES SEN VÀNG ĐỂ GIỮ CHỖ TRƯỚC KHI CHỐT KHÁCH

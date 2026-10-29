@@ -21,6 +21,8 @@ function zaloGia() {
     listener,
     getOwnId: async () => 'TOI',
     getGroupInfo: async (id) => ({ gridInfoMap: { [id]: { name: `Nhóm ${id}` } } }),
+    dangSoan: [],
+    async sendTypingEvent(threadId) { this.dangSoan.push(threadId); },
   };
 }
 
@@ -31,7 +33,8 @@ const tinNhom = (threadId, content, { data = {}, ...ngoai } = {}) => ({
 });
 
 const agentMau = (o = {}) => ({ id: 'a', ten: 'Agent A', nhom: ['G1'], tra_loi_khi: 'moi-tin', che_do: 'tu-gui', ai: 'claude', model: '', ...o });
-const cauHinh = (agents, o = {}) => ({ bo_nao: os.tmpdir(), nhom_bao_cao: '', chat_rieng: '', dong_bo: { nguon: [], moi_phut: 0 }, agents, ...o });
+const KHONG_MAC_DINH = { agent: '', chat_rieng: false, nhom_khi_duoc_tag: false };
+const cauHinh = (agents, o = {}) => ({ bo_nao: os.tmpdir(), nhom_bao_cao: '', mac_dinh: KHONG_MAC_DINH, dong_bo: { nguon: [], moi_phut: 0 }, agents, ...o });
 
 async function khoiDong(ch, traLoi = { hanh_dong: 'tra_loi', tin_nhan: 'Dạ em trả lời', ly_do: '', cau_hoi_thieu_du_lieu: '' }) {
   const api = zaloGia();
@@ -119,16 +122,49 @@ test('chuyển người thật: báo vào nhóm quản lý', async () => {
   assert.match(gui[1].text, /LG6-1121/);
 });
 
-test('tin riêng 1-1 chỉ trả lời khi có chat_rieng', async () => {
+test('tin riêng 1-1 chỉ trả lời khi bật mac_dinh.chat_rieng', async () => {
   const tinRieng = { type: ThreadType.User, threadId: 'U1', isSelf: false, data: { msgId: 'r1', ts: String(Date.now()), dName: 'Lan', content: 'alo' } };
   const khong = await khoiDong(cauHinh([agentMau()]));
   khong.api.listener.emit('message', tinRieng);
   await doi(80);
   assert.equal(khong.hoi.length, 0);
 
-  const co = await khoiDong(cauHinh([agentMau()], { chat_rieng: 'a' }));
+  const co = await khoiDong(cauHinh([agentMau()], { mac_dinh: { agent: 'a', chat_rieng: true, nhom_khi_duoc_tag: false } }));
   co.api.listener.emit('message', { ...tinRieng, data: { ...tinRieng.data, msgId: 'r2' } });
   await doi(80);
   assert.equal(co.hoi.length, 1);
   assert.equal(co.gui[0].quote, undefined);
+});
+
+test('#thu từ chính nick: đóng vai khách, không làm agent nhường', async () => {
+  const { api, hoi } = await khoiDong(cauHinh([agentMau({ tra_loi_khi: 'khi-duoc-goi', che_do: 'nhap' })]));
+  api.listener.emit('message', { type: ThreadType.Group, threadId: 'G1', isSelf: true, data: { msgId: 'nv1', ts: String(Date.now()), content: 'chào cả nhà' } });
+  api.listener.emit('message', { type: ThreadType.Group, threadId: 'G1', isSelf: true, data: { msgId: 'nv2', ts: String(Date.now()), content: '#thu Lệ Giang tháng 11 còn chỗ không?' } });
+  await doi(80);
+  assert.equal(hoi.length, 1);
+  assert.deepEqual(hoi[0].tinhHuong.tinMoi.map((t) => [t.ten, t.noi_dung]), [['Khách (thử)', 'Lệ Giang tháng 11 còn chỗ không?']]);
+});
+
+test('nhóm chưa giao: agent mặc định chỉ trả lời khi được tag', async () => {
+  const { api, hoi } = await khoiDong(cauHinh([agentMau({ nhom: [] })], { mac_dinh: { agent: 'a', chat_rieng: true, nhom_khi_duoc_tag: true } }));
+  api.listener.emit('message', tinNhom('G9', 'chuyện riêng của nhóm'));
+  await doi(80);
+  assert.equal(hoi.length, 0);
+  api.listener.emit('message', tinNhom('G9', '@nick tour Thái còn chỗ?', { data: { mentions: [{ uid: 'TOI', pos: 0, len: 5, type: 0 }] } }));
+  await doi(80);
+  assert.equal(hoi.length, 1);
+  assert.ok(hoi[0].tinhHuong.lichSu.some((t) => t.noi_dung === 'chuyện riêng của nhóm'), 'vẫn có ngữ cảnh nhóm');
+});
+
+test('đang soạn tin: hiện khi tự gửi và được tag hoặc tin riêng, không hiện ở chế độ nháp', async () => {
+  const tuGui = await khoiDong(cauHinh([agentMau()], { mac_dinh: { agent: 'a', chat_rieng: true, nhom_khi_duoc_tag: true } }));
+  tuGui.api.listener.emit('message', { type: ThreadType.User, threadId: 'U5', isSelf: false, data: { msgId: 'u5', ts: String(Date.now()), dName: 'Lan', content: 'alo' } });
+  tuGui.api.listener.emit('message', tinNhom('G1', 'nói chuyện thường'));
+  await doi(100);
+  assert.deepEqual(tuGui.api.dangSoan, ['U5']);
+
+  const nhap = await khoiDong(cauHinh([agentMau({ che_do: 'nhap' })], { mac_dinh: { agent: 'a', chat_rieng: true, nhom_khi_duoc_tag: true } }));
+  nhap.api.listener.emit('message', { type: ThreadType.User, threadId: 'U6', isSelf: false, data: { msgId: 'u6', ts: String(Date.now()), dName: 'Lan', content: 'alo' } });
+  await doi(100);
+  assert.deepEqual(nhap.api.dangSoan, []);
 });

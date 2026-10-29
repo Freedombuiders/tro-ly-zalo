@@ -81,7 +81,7 @@ async function thu() {
   // Cho phép "npm run thu <id-agent> ..." vì PowerShell nuốt dấu "--" của npm.
   let idAgent = layCo('agent');
   if (!idAgent && ch.agents.some((a) => a.id === thamSo[0])) idAgent = thamSo.shift();
-  const agent = timAgent(ch, idAgent || ch.chat_rieng || ch.agents[0]?.id);
+  const agent = timAgent(ch, idAgent || ch.mac_dinh.agent || ch.agents[0]?.id);
   const ten = layCo('ten') ?? 'Khách';
   const cauHoi = thamSo.join(' ').trim();
   const lichSu = [];
@@ -122,7 +122,11 @@ async function chay() {
   for (const a of ch.agents) {
     console.log(`  - ${a.ten} (${a.id}): ${a.nhom.length} nhóm, ${a.tra_loi_khi === 'moi-tin' ? 'đọc mọi tin' : 'chỉ khi được tag'}, ${a.che_do === 'tu-gui' ? 'TỰ GỬI' : 'NHÁP (chỉ in ra đây, chưa gửi)'}`);
   }
-  if (ch.chat_rieng) console.log(`  - Tin nhắn riêng: ${ch.chat_rieng}`);
+  const md = ch.mac_dinh;
+  if (md.agent && (md.chat_rieng || md.nhom_khi_duoc_tag)) {
+    const viec = [md.chat_rieng && 'mọi tin nhắn riêng 1-1', md.nhom_khi_duoc_tag && 'mọi nhóm khác khi được tag'].filter(Boolean).join(' và ');
+    console.log(`  - Mặc định: ${timAgent(ch, md.agent).ten} (${md.agent}) trả lời ${viec}`);
+  }
   console.log('Nhấn Ctrl+C để dừng.\n');
 }
 
