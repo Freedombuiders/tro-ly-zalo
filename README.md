@@ -4,6 +4,8 @@
 
 > Dự án được chia sẻ bởi **Tony Hoang**, Freedom Builders · CAIO của **Rocket Tech Global**.
 
+> 👉 **Prompt copy sẵn cho buổi thực hành: [PROMPT.md](PROMPT.md)** (chăm khách hàng, AI Sales cho đại lý, hỗ trợ nội bộ, xem thử với bộ não mẫu).
+
 - Agent chỉ nói điều có trong bộ não của bạn. Không có dữ liệu thì nói thật và gọi người phụ trách, không bịa giá, không tự hứa.
 - Đọc được Google Sheet hoặc file Excel (bảng giá, lịch khởi hành, tồn kho) và cập nhật mỗi 15 phút, nên luôn báo đúng giá và số chỗ còn lại.
 - Nhắn như người thật: trả lời đúng câu hỏi ngay câu đầu, tách thành vài tin ngắn, hiện "đang soạn tin", gọi đúng anh/chị theo cách khách xưng. **Gửi kèm ảnh** có sẵn trong bộ não (ảnh tour, khách sạn, sản phẩm) khi hợp.
