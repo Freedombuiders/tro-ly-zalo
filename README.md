@@ -96,6 +96,7 @@ Giá, lịch và số chỗ nằm trong hai file Excel ở `bo-nao-mau/1. Thu Th
 |---|---|
 | `npm run kiem-tra` | Kiểm tra Node, Claude Code/Codex, cấu hình, phiên Zalo |
 | `npm run thu <id-agent> "câu hỏi"` | Hỏi thử agent, không cần Zalo. Bỏ câu hỏi để trò chuyện liên tục |
+| `npm run gia-lap <id-agent>` | AI đóng vai 5 kiểu khách (dễ tính, kỹ tính, mặc cả, khó tính, gài bẫy) nhắn nhiều lượt với agent, AI khác chấm điểm và gợi ý sửa. Chọn vai: `npm run gia-lap <id-agent> mac-ca dai-ly`. Hội thoại lưu ở `data/gia-lap/` |
 | `npm run dong-bo` | Đồng bộ Google Sheet / Excel vào bộ não |
 | `npm run dang-nhap` | Đăng nhập Zalo bằng mã QR |
 | `npm run nhom` | Danh sách nhóm Zalo và id |

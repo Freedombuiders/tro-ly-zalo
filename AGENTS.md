@@ -8,6 +8,7 @@ Repo này là **Trợ lý Zalo**: một chương trình Node nhỏ chạy trên 
 |---|---|
 | "cài đặt", "tạo agent chăm sóc nhóm", "đọc bộ não số 2", vừa clone repo | Làm theo `.agents/skills/cai-dat-tro-ly-zalo/SKILL.md` |
 | thêm agent cho nhóm khác | Viết `agents/<id>/vai-tro.md` theo mẫu, thêm vào `agents:` trong `cau-hinh.yaml`, `npm run thu`, rồi `npm run giao` |
+| "giả lập khách", "test agent", "cải tiến agent" | `npm run gia-lap <id-agent>`, đọc điểm và lỗi, sửa `src/luat-chung.md` (luật chung) hoặc `agents/<id>/vai-tro.md`, chạy lại đến khi điểm ổn |
 | agent trả lời sai, thiếu thông tin | Sửa dữ liệu trong bộ não (đúng phòng, theo luật của bộ não); sửa cách nói trong `vai-tro.md`. Xem `Chờ Duyệt/Câu hỏi agent chưa trả lời được.md` trong bộ não |
 | bộ não thay đổi nhiều | Viết lại `agents/tom-tat-doanh-nghiep.md` |
 | thêm Google Sheet / Excel | Thêm vào `dong_bo.nguon` trong `cau-hinh.yaml`, `npm run dong-bo` |
@@ -18,6 +19,7 @@ Repo này là **Trợ lý Zalo**: một chương trình Node nhỏ chạy trên 
 ```bash
 npm run kiem-tra                         # kiểm tra Node, CLI, cấu hình, phiên Zalo
 npm run thu <id-agent> "câu hỏi"    # hỏi thử agent, không cần Zalo (bỏ câu hỏi để trò chuyện liên tục)
+npm run gia-lap <id-agent> [vai...]  # AI đóng vai khách (de-tinh ky-tinh mac-ca kho-tinh gai-bay dai-ly), AI khác chấm điểm
 npm run dong-bo                          # đồng bộ Google Sheet / Excel vào bộ não
 npm run dang-nhap                        # đăng nhập Zalo bằng QR (data/qr-zalo.png)
 npm run nhom                             # danh sách nhóm và id

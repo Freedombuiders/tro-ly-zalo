@@ -71,6 +71,8 @@ Với từng agent, thử 3 đến 5 câu điển hình (lấy từ câu hỏi t
 npm run thu <id-agent> "câu hỏi"
 ```
 
+Sau đó chạy giả lập cho agent chính: `npm run gia-lap <id-agent>` (AI đóng vai 5 kiểu khách, AI khác chấm điểm 0–10 và gợi ý sửa, mất vài phút). Điểm mục nào dưới 8 thì sửa `vai-tro.md` theo gợi ý và chạy lại.
+
 Mỗi lượt mất 10–60 giây. Chép nguyên văn câu trả lời cho người dùng xem. Họ muốn chỉnh giọng hay nội dung thì sửa `vai-tro.md` (cách nói) hoặc bộ não (dữ liệu), rồi thử lại. Người dùng muốn tự trò chuyện thử: bảo họ mở terminal khác, chạy `npm run thu <id-agent>`.
 
 ## 7. Đăng nhập Zalo

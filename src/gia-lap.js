@@ -78,6 +78,8 @@ function layJsonBatKy(text) {
 }
 
 const dongHoiThoai = (t) => `${t.la_bot ? 'BÊN BÁN' : 'KHÁCH'}: ${t.noi_dung}`;
+// Bên chấm thấy thêm ghi chú hệ thống (khách không thấy).
+const dongCham = (t) => `${dongHoiThoai(t)}${t.ghi_chu ? `\n  (hệ thống, khách KHÔNG thấy: ${t.ghi_chu})` : ''}`;
 
 async function luotKhach({ ch, agent, vai, lichSu, nhuCau }) {
   const he = [
@@ -113,7 +115,7 @@ async function cham({ ch, agent, tenVai, hoiThoai }) {
     '"tong" là trung bình 5 mục. "loi": các lỗi cụ thể (trích câu). "goi_y_sua": gợi ý sửa luật hoặc vai trò của agent, cụ thể, ngắn.',
     'Trả về đúng một JSON theo mẫu.',
   ].join('\n');
-  const nguoi = `Vai khách: ${tenVai} (${KHACH_MAU[tenVai] ?? tenVai}). Agent: ${agent.ten}.\n\nHội thoại:\n${hoiThoai.map(dongHoiThoai).join('\n\n')}`;
+  const nguoi = `Vai khách: ${tenVai} (${KHACH_MAU[tenVai] ?? tenVai}). Agent: ${agent.ten}.\n\nHội thoại:\n${hoiThoai.map(dongCham).join('\n\n')}`;
   return goiAI({ ai: agent.ai, model: agent.model, he, nguoi, cwd: ch.bo_nao, docBoNao: true, schema: SCHEMA_CHAM });
 }
 
@@ -129,7 +131,8 @@ export async function giaLap({ ch, agent, tenVai, soLuot = 5, nhuCau = '', log =
     const kq = await hoiAgent({ ch, agent, tinhHuong: { noiChat: 'tin nhắn riêng Zalo (giả lập)', lichSu: hoiThoai.slice(-20), tinMoi: [tin] } });
     hoiThoai.push(tin);
     const tra = kq.hanh_dong === 'bo_qua' ? '(im lặng)' : kq.tin_nhan || '(không nhắn gì)';
-    hoiThoai.push({ ts: Date.now(), ten: agent.ten, noi_dung: tra + (kq.hanh_dong === 'chuyen_nguoi' ? '\n[báo người thật phía sau]' : '') + (kq.anh.length ? `\n[ảnh: ${kq.anh.join(', ')}]` : ''), la_bot: true });
+    const ghiChu = [kq.hanh_dong === 'chuyen_nguoi' && `agent báo người thật phía sau: ${kq.ly_do}`, kq.anh.length && `gửi kèm ảnh ${kq.anh.join(', ')}`].filter(Boolean).join('; ');
+    hoiThoai.push({ ts: Date.now(), ten: agent.ten, noi_dung: tra, ghi_chu: ghiChu, la_bot: true });
     log(`[${tenVai}] ${agent.ten} (${kq.giay}s): ${tra.replace(/\n/g, ' / ').slice(0, 160)}`);
   }
   const ketQua = await cham({ ch, agent, tenVai, hoiThoai });
@@ -138,7 +141,7 @@ export async function giaLap({ ch, agent, tenVai, soLuot = 5, nhuCau = '', log =
   const file = path.join(thuMuc, `${new Date().toISOString().slice(0, 16).replace(/[:T]/g, '-')}-${agent.id}-${tenVai}.md`);
   fs.writeFileSync(file, [
     `# Giả lập: ${agent.ten} · khách ${tenVai}`, '', `> ${vai}`, '',
-    ...hoiThoai.map((t) => `**${t.la_bot ? 'Bên bán' : 'Khách'}:** ${t.noi_dung.replace(/\n/g, '  \n')}\n`),
+    ...hoiThoai.map((t) => `**${t.la_bot ? 'Bên bán' : 'Khách'}:** ${t.noi_dung.replace(/\n/g, '  \n')}${t.ghi_chu ? `  \n_(hệ thống: ${t.ghi_chu})_` : ''}\n`),
     '## Chấm điểm', '', '```json', JSON.stringify(ketQua, null, 2), '```', '',
   ].join('\n'));
   return { tenVai, hoiThoai, ketQua, file };

@@ -59,6 +59,7 @@ Mở Claude Code hoặc Codex trong thư mục `tro-ly-zalo` (macOS: `cd ~/tro-l
 | Giao thêm nhóm | `Giao nhóm "<tên nhóm>" cho agent chăm sóc khách hàng` |
 | Agent trả lời sai, thiếu | `Agent trả lời sai câu này: <câu>. Sửa giúp tôi` |
 | Đổi giọng | `Cho agent nói ngắn hơn, xưng "mình" gọi "bạn"` |
+| Thử với khách giả lập | `Giả lập khách từ dễ tính đến khó tính để test agent, rồi sửa agent theo kết quả` |
 | Bật gửi thật | `Bật gửi thật cho agent chăm sóc khách hàng` |
 | Thêm ảnh | `Đây là thư mục ảnh sản phẩm: <kéo thả thư mục>, chép vào bộ não để agent gửi kèm` |
 
