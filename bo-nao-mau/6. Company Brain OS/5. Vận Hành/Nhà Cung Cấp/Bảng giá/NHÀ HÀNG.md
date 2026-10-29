@@ -2,12 +2,12 @@
 dong-bo: tu-dong
 nguon: "Bảng giá nhà cung cấp"
 trang-tinh: "NHÀ HÀNG"
-cap-nhat: "22:46 29/10/2026"
+cap-nhat: "23:01 29/10/2026"
 ---
 
 # NHÀ HÀNG
 
-> Tự động đồng bộ từ bảng tính "Bảng giá nhà cung cấp" lúc 22:46 29/10/2026. Đây là dữ liệu mới nhất; sửa trong bảng tính gốc, đừng sửa file này.
+> Tự động đồng bộ từ bảng tính "Bảng giá nhà cung cấp" lúc 23:01 29/10/2026. Đây là dữ liệu mới nhất; sửa trong bảng tính gốc, đừng sửa file này.
 
 BẢNG GIÁ ĂN UỐNG 2026
 

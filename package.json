@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "exceljs": "^4.4.0",
+    "image-size": "^2.0.4",
     "yaml": "^2.9.1",
     "zca-js": "2.1.2"
   },

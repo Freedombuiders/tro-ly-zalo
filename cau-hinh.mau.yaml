@@ -5,8 +5,8 @@
 # Mặc định trỏ vào bộ não mẫu của công ty hư cấu "Du Lịch Sen Vàng".
 bo_nao: ./bo-nao-mau
 
-# AI trả lời tin nhắn: claude (Claude Code) hoặc codex (Codex). Cần cài và đăng nhập trước.
-ai: claude
+# AI trả lời tin nhắn: tu-dong (có Claude Code thì dùng, không thì dùng Codex), claude hoặc codex.
+ai: tu-dong
 # Model cho từng loại AI. Muốn nhanh, rẻ hơn với Claude thì dùng claude-haiku-5-5.
 model:
   claude: claude-sonnet-5-5

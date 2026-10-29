@@ -6,7 +6,7 @@ import path from 'node:path';
 import { test } from 'node:test';
 
 process.env.TRO_LY_DATA = fs.mkdtempSync(path.join(os.tmpdir(), 'tro-ly-zalo-'));
-const { chayBot, CHO_GOM_TIN_MS } = await import('../src/bot.js');
+const { chayBot, CHO_GOM_TIN_MS, tachBongBong, anhHopLe } = await import('../src/bot.js');
 const { ThreadType } = await import('zca-js');
 CHO_GOM_TIN_MS.nhom = 20;
 CHO_GOM_TIN_MS.rieng = 20;
@@ -40,7 +40,9 @@ async function khoiDong(ch, traLoi = { hanh_dong: 'tra_loi', tin_nhan: 'Dạ em 
   const api = zaloGia();
   const hoi = [];
   const gui = [];
+  const anh = [];
   await chayBot(ch, {
+    guiAnhZalo: async (_api, threadId, _loai, files) => { anh.push({ threadId, files }); },
     api,
     log: () => {},
     hoi: async (x) => { hoi.push(x); return { ...traLoi, giay: 0 }; },
@@ -50,7 +52,7 @@ async function khoiDong(ch, traLoi = { hanh_dong: 'tra_loi', tin_nhan: 'Dạ em 
       api.listener.emit('message', { type: loai, threadId, isSelf: true, data: { msgId: String(++dem), ts: String(Date.now()), content: text } });
     },
   });
-  return { api, hoi, gui };
+  return { api, hoi, gui, anh };
 }
 
 test('gom nhiều tin liền nhau thành một lượt, trả lời có trích dẫn tin cuối', async () => {
@@ -180,4 +182,39 @@ test('người được giao rõ theo chế độ của agent, tin riêng khác 
   await doi(120);
   assert.equal(hoi.length, 2);
   assert.deepEqual(gui.map((g) => g.threadId), ['U-test']);
+});
+
+test('tách câu trả lời thành tối đa 3 tin theo dòng trống', () => {
+  assert.deepEqual(tachBongBong('Còn anh ạ.'), ['Còn anh ạ.']);
+  assert.deepEqual(tachBongBong('A\n\nB\n- dòng 1\n- dòng 2\n\n\nC'), ['A', 'B\n- dòng 1\n- dòng 2', 'C']);
+  assert.deepEqual(tachBongBong('1\n\n2\n\n3\n\n4'), ['1', '2', '3\n\n4']);
+});
+
+test('chỉ gửi ảnh có thật nằm trong bộ não', () => {
+  const goc = fs.mkdtempSync(path.join(os.tmpdir(), 'anh-'));
+  fs.mkdirSync(path.join(goc, 'Ảnh'));
+  fs.writeFileSync(path.join(goc, 'Ảnh', 'Tour Nhật.jpg'), 'x');
+  fs.writeFileSync(path.join(os.tmpdir(), 'ngoai.jpg'), 'x');
+  const ok = anhHopLe(goc, ['Ảnh/Tour Nhật.jpg', 'Ảnh/khong-co.jpg', '../ngoai.jpg', 'Me.md']);
+  assert.deepEqual(ok, [path.join(goc, 'Ảnh', 'Tour Nhật.jpg')]);
+});
+
+test('trả lời nhiều tin: trích dẫn tin khách ở tin đầu, gửi ảnh sau cùng', async () => {
+  const goc = fs.mkdtempSync(path.join(os.tmpdir(), 'bo-nao-'));
+  fs.writeFileSync(path.join(goc, 'tour.jpg'), 'x');
+  const { api, gui, anh, hoi } = await khoiDong(
+    cauHinh([agentMau()], { bo_nao: goc }),
+    { hanh_dong: 'tra_loi', tin_nhan: 'Còn anh ạ.\n\nNgày 21/11 còn 6 chỗ.', ly_do: '', cau_hoi_thieu_du_lieu: '', anh: ['tour.jpg', '../x.jpg'] },
+  );
+  const tin = tinNhom('G1', 'Lệ Giang còn chỗ không?');
+  api.listener.emit('message', tin);
+  await doi(150);
+  assert.deepEqual(gui.map((g) => g.text), ['Còn anh ạ.', 'Ngày 21/11 còn 6 chỗ.']);
+  assert.equal(gui[0].quote, tin.data);
+  assert.equal(gui[1].quote, undefined);
+  assert.deepEqual(anh, [{ threadId: 'G1', files: [path.join(goc, 'tour.jpg')] }]);
+  // hai tin vọng lại của bot không làm agent nhường
+  api.listener.emit('message', tinNhom('G1', 'thế tháng 12?'));
+  await doi(150);
+  assert.equal(hoi.length, 2);
 });

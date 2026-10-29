@@ -2,10 +2,10 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import { THU_MUC_DATA, timAgent } from './cau-hinh.js';
-import { gioVietNam, hoiAgent } from './agent.js';
+import { DUOI_ANH, gioVietNam, hoiAgent } from './agent.js';
 import { dongBoTatCa } from './dong-bo.js';
 import { docLichSu, ghiTin } from './lich-su.js';
-import { ThreadType, guiTin, ketNoi, noiDungTin, tenNhom } from './zalo.js';
+import { ThreadType, guiAnh, guiTin, ketNoi, noiDungTin, tenNhom } from './zalo.js';
 
 export const CHO_GOM_TIN_MS = { nhom: 6000, rieng: 3000 }; // đợi khách nhắn xong rồi trả lời một lần
 const NHUONG_NGUOI_THAT_MS = 30 * 60 * 1000; // nhân viên vừa nhắn bằng nick này thì agent nhường 30 phút
@@ -15,6 +15,22 @@ const NHAC_DANG_SOAN_MS = 4000; // bong bóng "đang soạn tin" của Zalo tắ
 
 export const gio = () => new Date(Date.now() + 7 * 3600 * 1000).toISOString().slice(11, 19);
 const cat = (s, n = 160) => (s.length > n ? `${s.slice(0, n)}…` : s).replace(/\n/g, ' ⏎ ');
+const TOI_DA_BONG_BONG = 3;
+
+/** Tách câu trả lời thành vài tin ngắn như người nhắn (ngăn bởi dòng trống), tối đa 3 tin. */
+export function tachBongBong(text) {
+  const phan = String(text).split(/\n\s*\n/).map((s) => s.trim()).filter(Boolean);
+  if (phan.length <= TOI_DA_BONG_BONG) return phan;
+  return [...phan.slice(0, TOI_DA_BONG_BONG - 1), phan.slice(TOI_DA_BONG_BONG - 1).join('\n\n')];
+}
+
+/** Chỉ giữ ảnh có thật, nằm trong bộ não, dưới 10 MB. Trả về đường dẫn tuyệt đối. */
+export function anhHopLe(boNao, dsAnh) {
+  const goc = path.resolve(boNao);
+  return dsAnh
+    .map((a) => path.resolve(goc, a))
+    .filter((f) => f.startsWith(goc + path.sep) && DUOI_ANH.test(f) && fs.existsSync(f) && fs.statSync(f).size < 10 * 1024 * 1024);
+}
 
 /** Ghi câu hỏi agent chưa có dữ liệu vào Chờ Duyệt của bộ não (theo luật: AI chỉ ghi vào Chờ Duyệt). */
 export function ghiCauHoiThieu(ch, { noiChat, ten, cauHoi }) {
@@ -49,7 +65,7 @@ function taoKhoa(toiDa) {
 }
 
 /** api, hoi, gui: chỉ truyền vào khi chạy test (Zalo giả, agent giả). */
-export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgent, guiZalo = guiTin } = {}) {
+export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgent, guiZalo = guiTin, guiAnhZalo = guiAnh } = {}) {
   const api = apiCo ?? await ketNoi();
   const toi = String(await api.getOwnId());
   const agentCuaNhom = new Map();
@@ -70,16 +86,28 @@ export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgen
     return daGuiTrongGio.length < TOI_DA_TIN_MOI_GIO;
   };
 
-  async function gui(threadId, loai, text, quote, agent) {
+  /** Gửi câu trả lời thành vài tin ngắn (trích dẫn tin khách ở tin đầu khi trong nhóm), rồi gửi ảnh. */
+  async function gui(threadId, loai, text, quote, agent, anh = []) {
     if (!coTheGui()) {
       log(`[${gio()}] ⚠ Đã gửi ${TOI_DA_TIN_MOI_GIO} tin trong 1 giờ, tạm dừng gửi để bảo vệ nick.`);
       return false;
     }
-    botVuaGui.push({ threadId, noi_dung: text, ts: Date.now() });
-    if (botVuaGui.length > 50) botVuaGui.shift();
-    await guiZalo(api, threadId, loai, text, quote);
+    const bongBong = tachBongBong(text);
+    for (const [i, phan] of bongBong.entries()) {
+      botVuaGui.push({ threadId, noi_dung: phan, ts: Date.now() });
+      if (botVuaGui.length > 50) botVuaGui.shift();
+      await guiZalo(api, threadId, loai, phan, i === 0 ? quote : undefined);
+    }
     daGuiTrongGio.push(Date.now());
     ghiTin(threadId, { id: `bot-${Date.now()}`, ts: Date.now(), ten: agent.ten, noi_dung: text, la_bot: true });
+    if (anh.length) {
+      try {
+        await guiAnhZalo(api, threadId, loai, anh);
+        ghiTin(threadId, { id: `bot-anh-${Date.now()}`, ts: Date.now(), ten: agent.ten, noi_dung: `[Ảnh: ${anh.map((f) => path.basename(f)).join(', ')}]`, la_bot: true });
+      } catch (err) {
+        log(`[${gio()}] Không gửi được ảnh: ${err.message}`);
+      }
+    }
     return true;
   }
 
@@ -124,11 +152,13 @@ export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgen
       const nhan = { tra_loi: 'TRẢ LỜI', bo_qua: 'IM LẶNG', chuyen_nguoi: 'CHUYỂN NGƯỜI THẬT' }[kq.hanh_dong];
       log(`[${gio()}] → ${agent.ten} (${kq.giay}s) ${nhan}${nhap && kq.tin_nhan && kq.hanh_dong !== 'bo_qua' ? ' [NHÁP, chưa gửi]' : ''}`);
       if (kq.tin_nhan && kq.hanh_dong !== 'bo_qua') log(`   ${kq.tin_nhan.replace(/\n/g, '\n   ')}`);
+      const anh = kq.hanh_dong === 'bo_qua' ? [] : anhHopLe(ch.bo_nao, kq.anh ?? []);
+      if (anh.length) log(`   ${nhap ? '[NHÁP] ' : ''}ảnh: ${anh.map((f) => path.basename(f)).join(', ')}`);
       if (kq.ly_do) log(`   (lý do: ${cat(kq.ly_do)})`);
 
       const cuoi = tinMoi[tinMoi.length - 1];
       if (kq.hanh_dong !== 'bo_qua' && kq.tin_nhan && !nhap && !(nhuongDen.get(threadId) > Date.now())) {
-        await gui(threadId, loai, kq.tin_nhan, loai === ThreadType.Group ? cuoi.data : undefined, agent);
+        await gui(threadId, loai, kq.tin_nhan, loai === ThreadType.Group ? cuoi.data : undefined, agent, anh);
       }
       if (kq.hanh_dong === 'chuyen_nguoi') {
         const canhBao = `🔔 Cần người hỗ trợ: ${noiChat}\nKhách: ${cuoi.ten}: ${cat(cuoi.noi_dung, 300)}\nViệc cần làm: ${kq.ly_do || '(agent không ghi)'}`;

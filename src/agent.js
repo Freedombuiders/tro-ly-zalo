@@ -15,12 +15,33 @@ const SCHEMA = {
     tin_nhan: { type: 'string' },
     ly_do: { type: 'string' },
     cau_hoi_thieu_du_lieu: { type: 'string' },
+    anh: { type: 'array', items: { type: 'string' } },
   },
-  required: ['hanh_dong', 'tin_nhan', 'ly_do', 'cau_hoi_thieu_du_lieu'],
+  required: ['hanh_dong', 'tin_nhan', 'ly_do', 'cau_hoi_thieu_du_lieu', 'anh'],
   additionalProperties: false,
 };
 
 const docNeuCo = (f) => (fs.existsSync(f) ? fs.readFileSync(f, 'utf8').trim() : '');
+export const DUOI_ANH = /\.(jpe?g|png|webp|gif)$/i;
+const TOI_DA_ANH_LIET_KE = 200;
+
+/** Danh sách ảnh trong bộ não (đường dẫn tính từ thư mục bộ não), bỏ thư mục ẩn và mẫu. */
+export function dsAnh(boNao) {
+  const ra = [];
+  const di = (thuMuc, tuongDoi) => {
+    let muc;
+    try { muc = fs.readdirSync(thuMuc, { withFileTypes: true }); } catch { return; }
+    for (const m of muc) {
+      if (ra.length >= TOI_DA_ANH_LIET_KE) return;
+      if (m.name.startsWith('.') || m.name === 'node_modules' || /template/i.test(m.name)) continue;
+      const rel = tuongDoi ? `${tuongDoi}/${m.name}` : m.name;
+      if (m.isDirectory()) di(path.join(thuMuc, m.name), rel);
+      else if (DUOI_ANH.test(m.name)) ra.push(rel);
+    }
+  };
+  di(boNao, '');
+  return ra;
+}
 
 export function gioVietNam(d = new Date()) {
   const thu = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
@@ -56,6 +77,7 @@ export function loiNhacNguoiDung(agent, tinhHuong) {
   if (tinhHuong.lichSu?.length) phan.push(`Tin nhắn trước đó (cũ đến mới):\n${tinhHuong.lichSu.map(dongTin).join('\n')}`);
   phan.push(`Tin mới cần xem xét:\n${tinhHuong.tinMoi.map(dongTin).join('\n')}`);
   if (tinhHuong.ghiChu) phan.push(tinhHuong.ghiChu);
+  if (tinhHuong.anhCoSan?.length) phan.push(`Ảnh có sẵn trong bộ não, gửi kèm được (ghi đúng đường dẫn vào "anh"):\n${tinhHuong.anhCoSan.map((a) => `- ${a}`).join('\n')}`);
   phan.push('Quyết định trả lời, im lặng hay chuyển người thật. Cần số liệu thì tra bộ não trước. Cuối cùng trả về đúng một JSON theo mẫu.');
   return phan.join('\n\n');
 }
@@ -63,7 +85,7 @@ export function loiNhacNguoiDung(agent, tinhHuong) {
 /** Hỏi agent. Trả về { hanh_dong, tin_nhan, ly_do, cau_hoi_thieu_du_lieu, giay }. */
 export async function hoiAgent({ ch, agent, tinhHuong }) {
   const he = loiNhacHeThong(agent);
-  const nguoi = loiNhacNguoiDung(agent, tinhHuong);
+  const nguoi = loiNhacNguoiDung(agent, { ...tinhHuong, anhCoSan: tinhHuong.anhCoSan ?? dsAnh(ch.bo_nao) });
   const thuMuc = path.join(THU_MUC_DATA, 'tmp', crypto.randomUUID());
   fs.mkdirSync(thuMuc, { recursive: true });
   const batDau = Date.now();
@@ -141,6 +163,7 @@ export function chuanHoa(o) {
     tin_nhan: tin,
     ly_do: String(o?.ly_do ?? '').trim(),
     cau_hoi_thieu_du_lieu: String(o?.cau_hoi_thieu_du_lieu ?? '').trim(),
+    anh: (Array.isArray(o?.anh) ? o.anh : []).map((a) => String(a).trim()).filter((a) => DUOI_ANH.test(a)).slice(0, 3),
   };
 }
 

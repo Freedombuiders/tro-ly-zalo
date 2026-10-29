@@ -20,6 +20,7 @@ npm run kiem-tra
 - Thiếu Node: hướng dẫn cài Node 22 LTS ở nodejs.org, chờ người dùng cài xong.
 - `kiem-tra` lần đầu tự tạo `cau-hinh.yaml` từ `cau-hinh.mau.yaml`. Các dấu ✖ về tóm tắt, phiên Zalo là bình thường ở bước này.
 - Claude Code hoặc Codex chưa đăng nhập: gợi ý người dùng gõ `! claude` (hoặc `! codex login`) để đăng nhập.
+- `ai: tu-dong` (mặc định) tự dùng Claude Code nếu máy có, không thì dùng Codex. Model mặc định: `claude-sonnet-5-5`, `gpt-6.1-sol`.
 
 ## 2. Trỏ tới Bộ não số 2
 
@@ -57,6 +58,7 @@ Hỏi gộp một lần, đánh số, mỗi câu có gợi ý trả lời mặc 
 
 - `agents/tom-tat-doanh-nghiep.md`: tóm tắt doanh nghiệp tối đa 40 dòng, mọi agent đọc trong mỗi lượt trả lời. Gồm: doanh nghiệp là ai, sản phẩm chính, liên hệ và người phụ trách, giọng; và mục **"Tra cứu trong bộ não"** liệt kê đường dẫn thật (tính từ thư mục bộ não) nơi có giá, lịch, chính sách, câu hỏi thường gặp, quy trình. Xem file mẫu đang có để làm theo.
 - `agents/<id>/vai-tro.md` cho từng agent: id chữ thường không dấu, nối bằng gạch ngang (ví dụ `cskh-khach-hang`). Viết theo mẫu ba agent có sẵn: đối tượng chăm sóc, danh sách việc, khi nào chuyển người thật, xưng hô, điều tuyệt đối không nói. Chỉ ghi điều có trong bộ não hoặc người dùng vừa nói.
+- Ảnh: agent tự gửi kèm ảnh (jpg, png, webp) có trong bộ não khi hợp. Gợi ý người dùng để ảnh sản phẩm, tour, khách sạn vào bộ não với **tên file nói rõ nội dung** (ví dụ `2. Marketing/Thiết Kế & Hình Ảnh/Tour Nhật Bản 6N5Đ.jpg`).
 - `cau-hinh.yaml`: khai báo agent trong `agents:` (id, ten, `nhom: []`, `tra_loi_khi`, `che_do: nhap`). Xoá các agent mẫu Sen Vàng và thư mục `agents/<id>` của chúng nếu người dùng không dùng bộ não mẫu.
 - Có bảng tính: thêm vào `dong_bo.nguon` (ten, link, `luu_vao` là thư mục trong bộ não, ví dụ `6. Company Brain OS/1. Sản Phẩm & R&D/Danh Mục Sản Phẩm/<tên>`), chạy `npm run dong-bo`, mở một file kết quả kiểm tra đọc được. Lỗi tải Google Sheet: hướng dẫn bật Chia sẻ > "Bất kỳ ai có đường liên kết" > Người xem.
 - Chạy lại `npm run kiem-tra`.

@@ -1,4 +1,5 @@
 // Đọc và kiểm tra cau-hinh.yaml.
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -16,6 +17,21 @@ export function duongDan(p) {
   return path.isAbsolute(s) ? s : path.resolve(GOC, s);
 }
 
+const coLenh = (bin) => {
+  try {
+    return spawnSync(bin, ['--version'], { shell: process.platform === 'win32', stdio: 'ignore', timeout: 20_000 }).status === 0;
+  } catch {
+    return false;
+  }
+};
+let aiTimDuoc;
+/** "tu-dong": máy có Claude Code thì dùng, không thì dùng Codex. */
+function chonAi(v) {
+  if (v === 'claude' || v === 'codex') return v;
+  aiTimDuoc ??= coLenh('claude') ? 'claude' : coLenh('codex') ? 'codex' : 'claude';
+  return aiTimDuoc;
+}
+
 export function docCauHinh() {
   if (!fs.existsSync(FILE_CAU_HINH)) fs.copyFileSync(FILE_MAU, FILE_CAU_HINH);
   let raw;
@@ -26,7 +42,7 @@ export function docCauHinh() {
   }
   const ch = {
     bo_nao: duongDan(raw.bo_nao || './bo-nao-mau'),
-    ai: raw.ai === 'codex' ? 'codex' : 'claude',
+    ai: chonAi(raw.ai),
     nhom_bao_cao: raw.nhom_bao_cao ? String(raw.nhom_bao_cao).trim() : '',
     mac_dinh: docMacDinh(raw),
     agents: [],

@@ -6,6 +6,7 @@
 
 - Agent chỉ nói điều có trong bộ não của bạn. Không có dữ liệu thì nói thật và gọi người phụ trách, không bịa giá, không tự hứa.
 - Đọc được Google Sheet hoặc file Excel (bảng giá, lịch khởi hành, tồn kho) và cập nhật mỗi 15 phút, nên luôn báo đúng giá và số chỗ còn lại.
+- Nhắn như người thật: trả lời đúng câu hỏi ngay câu đầu, tách thành vài tin ngắn, hiện "đang soạn tin", gọi đúng anh/chị theo cách khách xưng. **Gửi kèm ảnh** có sẵn trong bộ não (ảnh tour, khách sạn, sản phẩm) khi hợp.
 - Mặc định chỉ **soạn nháp** (in ra màn hình). Bạn xem vài hôm thấy ổn mới bật gửi thật cho từng agent.
 
 ## Bắt đầu: máy chỉ cần có Claude Code hoặc Codex
@@ -105,7 +106,7 @@ Tạo tự động từ `cau-hinh.mau.yaml` ở lần chạy đầu. Nhờ Claud
 
 ```yaml
 bo_nao: "/Users/ban/Documents/Bộ não số 2"   # thư mục bộ não
-ai: claude                                   # claude hoặc codex
+ai: tu-dong                                  # tu-dong | claude | codex
 model:
   claude: claude-sonnet-5-5                  # claude-haiku-5-5 nếu muốn nhanh, rẻ hơn
   codex: gpt-6.1-sol

@@ -94,6 +94,7 @@ async function thu() {
     if (kq.tin_nhan) console.log(kq.tin_nhan);
     if (kq.ly_do) console.log(`(lý do: ${kq.ly_do})`);
     if (kq.cau_hoi_thieu_du_lieu) console.log(`(bộ não chưa có: ${kq.cau_hoi_thieu_du_lieu})`);
+    if (kq.anh.length) console.log(`(ảnh gửi kèm: ${kq.anh.join(', ')})`);
     if (kq.tin_nhan && kq.hanh_dong !== 'bo_qua') lichSu.push({ ts: Date.now(), ten: agent.ten, noi_dung: kq.tin_nhan, la_bot: true });
   };
   if (cauHoi) return hoi(cauHoi);

@@ -2,6 +2,7 @@
 import { exec } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import { imageSize } from 'image-size';
 import { LoginQRCallbackEventType, ThreadType, Zalo } from 'zca-js';
 import { THU_MUC_DATA } from './cau-hinh.js';
 
@@ -10,7 +11,14 @@ export { ThreadType };
 const FILE_PHIEN = path.join(THU_MUC_DATA, 'phien-zalo.json');
 const FILE_QR = path.join(THU_MUC_DATA, 'qr-zalo.png');
 
-const taoZalo = () => new Zalo({ selfListen: true, checkUpdate: false, logging: false });
+// zca-js cần kích thước ảnh khi tải ảnh lên Zalo.
+async function thongTinAnh(file) {
+  const data = await fs.promises.readFile(file);
+  const { width, height } = imageSize(data);
+  return { width, height, size: data.length };
+}
+
+const taoZalo = () => new Zalo({ selfListen: true, checkUpdate: false, logging: false, imageMetadataGetter: thongTinAnh });
 
 export const coPhien = () => fs.existsSync(FILE_PHIEN);
 
@@ -106,6 +114,11 @@ export function noiDungTin(data) {
   }[loai] ?? 'Đính kèm';
   const link = c && typeof c === 'object' && nhan === 'Liên kết' ? String(c.href ?? '') : '';
   return `[${nhan}${tieuDe ? `: ${tieuDe}` : ''}${link ? ` ${link}` : ''}]`;
+}
+
+/** Gửi ảnh (đường dẫn file trên máy), tối đa vài ảnh một lần. */
+export async function guiAnh(api, threadId, loai, files) {
+  return api.sendMessage({ msg: '', attachments: files }, threadId, loai);
 }
 
 /** Gửi tin chữ, trích dẫn tin gốc nếu có (không trích được thì gửi thường). */
