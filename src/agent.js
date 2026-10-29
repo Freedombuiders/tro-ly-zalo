@@ -3,6 +3,7 @@ import { spawn } from 'node:child_process';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { TIN_TU_CHOI, kiemTraTinGui, luatChanDoc } from './an-toan.js';
 import { FILE_TOM_TAT, GOC, THU_MUC_DATA, fileVaiTro } from './cau-hinh.js';
 
 const HET_GIO_MS = 4 * 60 * 1000;
@@ -93,18 +94,31 @@ export async function hoiAgent({ ch, agent, tinhHuong }) {
     const kq = agent.ai === 'codex'
       ? await chayCodex({ ch, agent, he, nguoi, thuMuc })
       : await chayClaude({ ch, agent, he, nguoi, thuMuc });
-    return { ...chuanHoa(kq), giay: Math.round((Date.now() - batDau) / 1000) };
+    return { ...chanLo(chuanHoa(kq)), giay: Math.round((Date.now() - batDau) / 1000) };
   } finally {
     fs.rmSync(thuMuc, { recursive: true, force: true });
   }
 }
 
+/** Tin sắp gửi mà lộ đường dẫn, file nội bộ, khoá, phiên đăng nhập thì thay bằng câu từ chối và báo người thật. */
+export function chanLo(kq) {
+  const lyDo = kq.hanh_dong === 'bo_qua' ? '' : kiemTraTinGui(kq.tin_nhan);
+  if (!lyDo) return kq;
+  return {
+    ...kq, hanh_dong: 'chuyen_nguoi', tin_nhan: TIN_TU_CHOI, anh: [],
+    ly_do: `Đã chặn một câu trả lời có ${lyDo}. Có thể có người đang cố khai thác thông tin, nên xem lại cuộc trò chuyện.`,
+  };
+}
+
 async function chayClaude({ ch, agent, he, nguoi, thuMuc }) {
   const fileHe = path.join(thuMuc, 'he-thong.md');
   fs.writeFileSync(fileHe, he);
+  // Claude Code luôn cho đọc file ở mọi nơi: cấm đọc mọi thứ ngoài thư mục bộ não bằng luật quyền.
+  const fileQuyen = path.join(thuMuc, 'quyen.json');
+  fs.writeFileSync(fileQuyen, JSON.stringify({ permissions: { deny: luatChanDoc(ch.bo_nao, { thuMucDuAn: GOC }) } }));
   const args = [
     '-p', '--output-format', 'json', '--no-session-persistence', '--strict-mcp-config',
-    '--tools', 'Read,Grep,Glob', '--allowedTools', 'Read,Grep,Glob', '--disallowedTools', 'Read(./Me.md)',
+    '--tools', 'Read,Grep,Glob', '--allowedTools', 'Read,Grep,Glob', '--settings', fileQuyen,
     '--max-turns', '20', '--append-system-prompt-file', fileHe,
   ];
   // Trên Windows lệnh chạy qua cmd.exe, chuỗi JSON có ngoặc kép dễ vỡ: bỏ schema, tự đọc JSON trong câu trả lời.

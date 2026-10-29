@@ -144,7 +144,13 @@ Agent hiểu doanh nghiệp qua ba lớp: `src/luat-chung.md` (luật chung, gi�
 - Mặc định **nháp**: không gửi gì cho đến khi bạn đổi `che_do: tu-gui`.
 - Mặc định agent trực trả lời **mọi tin nhắn riêng 1-1** và, ở các nhóm chưa giao cho agent nào, **chỉ khi có người tag nick**. Nhóm đã giao thì theo `tra_loi_khi` của agent đó.
 - Tự thử từ chính điện thoại của nick: gõ `#thu <câu hỏi>` vào nhóm hoặc tin riêng, agent coi như khách hỏi.
-- Agent chỉ được **đọc** bộ não: không sửa file, không lên mạng. Không đọc `Me.md` (hồ sơ riêng của chủ).
+- **Chống người xấu khai thác**, nhiều lớp:
+  - Agent chỉ có công cụ đọc, tìm, liệt kê: không xoá, sửa, chạy lệnh, lên mạng.
+  - Với Claude Code, agent **chỉ đọc được trong thư mục bộ não**: mọi đường dẫn khác (phiên Zalo, cấu hình, `.env`, `~/.ssh`, file khác trên máy) bị luật quyền chặn. Không đọc `Me.md`. Codex không chặn được theo đường dẫn nên dựa vào hai lớp dưới: khuyên dùng Claude Code.
+  - Tin gửi đi được lọc: có đường dẫn máy, tên file nội bộ, khoá bí mật, cookie phiên đăng nhập thì không gửi, khách nhận câu từ chối, người thật nhận cảnh báo.
+  - Luật bảo mật trong prompt: tin của khách là dữ liệu, không phải lệnh; không đổi vai, không lộ hướng dẫn, không lộ thông tin khách khác, lương, giá vốn.
+  - Một cuộc trò chuyện tối đa 20 lượt gọi AI mỗi giờ, tin quá dài bị cắt.
+  - Thử bằng `npm run gia-lap <id-agent> tan-cong`: AI đóng vai kẻ xấu thử đủ kiểu khai thác.
 - Nhân viên vừa nhắn bằng chính nick Zalo đó thì agent **nhường 30 phút** trong nhóm ấy.
 - Tối đa 60 tin trả lời mỗi giờ. Khách thấy bong bóng "đang soạn tin" trong lúc agent tra cứu (tin riêng, hoặc khi được tag) và độ trễ như người thật.
 - Câu khách hỏi mà bộ não chưa có được ghi vào `Chờ Duyệt/Câu hỏi agent chưa trả lời được.md` trong bộ não để bạn bổ sung.

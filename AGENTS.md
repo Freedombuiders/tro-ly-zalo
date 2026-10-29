@@ -35,6 +35,7 @@ src/lenh.js          các lệnh ở trên
 src/bot.js           nghe tin Zalo, gom tin, chọn agent theo nhóm, gửi trả lời, nhường người thật, báo nhóm quản lý
 src/agent.js         dựng lời nhắc, gọi `claude -p` hoặc `codex exec` (chỉ đọc, thư mục làm việc là bộ não), nhận JSON
 src/luat-chung.md    luật chung cho mọi agent (nguồn sự thật, cách nhắn Zalo, khi nào im lặng, khi nào chuyển người)
+src/an-toan.js       chặn agent đọc ngoài bộ não (luật quyền Claude Code), lọc tin gửi đi lộ thông tin nội bộ
 src/zalo.js          zca-js: đăng nhập QR, phiên, nhóm, gửi tin
 src/dong-bo.js       Google Sheet / .xlsx thành Markdown trong bộ não
 src/cau-hinh.js      đọc cau-hinh.yaml
