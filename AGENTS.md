@@ -38,6 +38,8 @@ src/dong-bo.js       Google Sheet / .xlsx thành Markdown trong bộ não
 src/cau-hinh.js      đọc cau-hinh.yaml
 agents/              tom-tat-doanh-nghiep.md + <id>/vai-tro.md
 bo-nao-mau/          Bộ não số 2 mẫu của công ty du lịch hư cấu "Sen Vàng"
+du-lieu-mau/         bảng lịch khởi hành thật của VN Express Tour (ví dụ để đồng bộ thử)
+skills/tro-ly-zalo/  skill tải repo về máy và cài từ đầu (người dùng cài vào ~/.claude/skills, ~/.codex/skills bằng cai-skill.sh / cai-skill.ps1)
 cau-hinh.mau.yaml    mẫu cấu hình (cau-hinh.yaml là bản của người dùng, không đưa lên git)
 data/                phiên Zalo, lịch sử tin nhắn (không đưa lên git)
 ```

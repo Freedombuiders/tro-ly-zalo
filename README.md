@@ -8,40 +8,44 @@
 - Đọc được Google Sheet hoặc file Excel (bảng giá, lịch khởi hành, tồn kho) và cập nhật mỗi 15 phút, nên luôn báo đúng giá và số chỗ còn lại.
 - Mặc định chỉ **soạn nháp** (in ra màn hình). Bạn xem vài hôm thấy ổn mới bật gửi thật cho từng agent.
 
-## Câu lệnh duy nhất cần nhớ
+## Bắt đầu: máy chỉ cần có Claude Code hoặc Codex
 
-Mở Claude Code (hoặc Codex) trong thư mục dự án rồi dán:
+Cần sẵn: **Claude Code** (gói Claude Pro trở lên) hoặc **Codex** (gói ChatGPT Plus trở lên) đã đăng nhập, một **nick Zalo** cho agent dùng (nên là nick phụ), và thư mục **Bộ não số 2** của doanh nghiệp. Node.js, Git, thư viện: agent tự kiểm tra và cài giúp (hỏi bạn trước).
+
+### Cách 1: dán một câu
+
+Mở Claude Code (`claude`) hoặc Codex (`codex`) ở thư mục bất kỳ rồi dán:
 
 ```text
-Cài đặt trợ lý Zalo cho doanh nghiệp của tôi.
+Tải và cài Trợ lý Zalo cho tôi: đọc rồi làm theo đúng hướng dẫn ở
+https://raw.githubusercontent.com/hoanghd218/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md
 Bộ não số 2 của tôi ở thư mục: <kéo thả thư mục Bộ não số 2 vào đây>
 Hãy đọc để hiểu toàn bộ doanh nghiệp, hỏi tôi những gì còn thiếu, rồi tạo agent chăm sóc khách hàng cho các nhóm Zalo tôi chỉ định.
 ```
 
-Đổi "chăm sóc khách hàng" thành "chăm sóc đại lý và cộng tác viên" hoặc "hỗ trợ nhân viên nội bộ" tuỳ nhóm. Chưa có bộ não thì viết "dùng bộ não mẫu" để thử với công ty du lịch hư cấu *Sen Vàng*.
+Đổi "chăm sóc khách hàng" thành "chăm sóc đại lý và cộng tác viên" hoặc "hỗ trợ nhân viên nội bộ" tuỳ nhóm. Chưa có bộ não thì viết "dùng bộ não mẫu".
 
-Agent sẽ làm lần lượt: cài thư viện, đọc bộ não, tóm tắt lại doanh nghiệp, hỏi bạn vài câu (chăm ai, xưng hô, điều không được nói, ai nhận việc khi cần người thật, có Google Sheet nào cần đọc), viết vai trò cho agent, **chạy thử vài câu hỏi cho bạn xem**, mở mã QR để bạn quét bằng Zalo, rồi giao nhóm.
+### Cách 2: cài skill một lần, sau đó chỉ gõ tên skill
 
-## Chuẩn bị (10 phút, làm trước buổi thực hành)
-
-1. **Node.js 22**: tải ở [nodejs.org](https://nodejs.org) (bản LTS), cài như phần mềm thường.
-2. **Claude Code** (cần gói Claude Pro trở lên) hoặc **Codex** (cần gói ChatGPT Plus trở lên). Mở Terminal (Windows: PowerShell) và gõ:
-   ```bash
-   npm install -g @anthropic-ai/claude-code    # hoặc: npm install -g @openai/codex
-   claude                                      # đăng nhập lần đầu; Codex: codex login
-   ```
-3. **Git**: macOS có sẵn; Windows tải ở [git-scm.com](https://git-scm.com). Không có Git thì tải file ZIP ở nút *Code > Download ZIP* trên GitHub.
-4. **Một nick Zalo** để agent dùng (nên là nick phụ) và **thư mục Bộ não số 2** của doanh nghiệp.
-
-Tải dự án và mở Claude Code:
+Mở Terminal (Windows: PowerShell), chạy một lệnh:
 
 ```bash
-git clone https://github.com/hoanghd218/tro-ly-zalo.git
-cd tro-ly-zalo
-claude          # hoặc: codex
+# macOS, Linux
+curl -fsSL https://raw.githubusercontent.com/hoanghd218/tro-ly-zalo/main/cai-skill.sh | bash
 ```
 
-Rồi dán câu lệnh ở trên.
+```powershell
+# Windows PowerShell
+irm https://raw.githubusercontent.com/hoanghd218/tro-ly-zalo/main/cai-skill.ps1 | iex
+```
+
+Rồi mở Claude Code gõ `/tro-ly-zalo`, hoặc mở Codex gõ `$tro-ly-zalo`.
+
+### Agent sẽ làm gì
+
+Tải mã nguồn về `~/tro-ly-zalo` (Windows: `C:\Users\<tên>\tro-ly-zalo`; không có Git thì tải ZIP), cài Node.js nếu thiếu, cài thư viện, đọc bộ não (bỏ qua `Me.md`), tóm tắt lại doanh nghiệp, hỏi bạn vài câu (chăm ai, xưng hô, điều không được nói, ai nhận việc khi cần người thật, có Google Sheet nào cần đọc), viết vai trò cho agent, **chạy thử vài câu hỏi cho bạn xem**, mở mã QR để bạn quét bằng Zalo, rồi giao nhóm. Cuối cùng đưa bạn lệnh chạy hằng ngày: `cd ~/tro-ly-zalo && npm start`.
+
+Đã có mã nguồn (đã clone) thì mở Claude Code hoặc Codex ngay trong thư mục `tro-ly-zalo` và nói "cài đặt trợ lý Zalo".
 
 ## Thử ngay trong 1 phút, chưa cần Zalo
 
@@ -62,6 +66,8 @@ Bộ não mẫu `bo-nao-mau/` là của công ty du lịch hư cấu **Sen Vàng
 | `tro-ly-noi-bo` | Nhóm nhân viên | Quy trình, nội quy, nghỉ phép; **lập báo giá và proposal tour đoàn** từ bảng giá nhà cung cấp (xe, du thuyền, khách sạn, HDV, nhà hàng) |
 
 Giá, lịch và số chỗ nằm trong hai file Excel ở `bo-nao-mau/1. Thu Thập/`, được đồng bộ thành ghi chú trong bộ não. Thay bằng link Google Sheet của bạn là agent đọc ngay sheet đó.
+
+**Dữ liệu thật để thử:** `du-lieu-mau/VNE3 - LKH TOUR GHÉP QUỐC TẾ.xlsx` là bảng lịch khởi hành tour ghép quốc tế của **VN Express Tour** (anh Hiếu Đặng chia sẻ làm ví dụ cho buổi thực hành): hàng trăm lịch khởi hành có mã tour, giá, hoa hồng CTV, số chỗ còn lại, link lịch trình. Giá và số chỗ là ảnh chụp tại thời điểm chia sẻ, không dùng để đặt tour thật. Cách dùng: bỏ dấu `#` ở nguồn VNE trong `cau-hinh.yaml` (mục `dong_bo`), chạy `npm run dong-bo`, rồi hỏi thử agent Sales "Lệ Giang tháng 12 còn chỗ không, cho mã tour với com".
 
 ## Cách hoạt động
 
@@ -152,4 +158,4 @@ Agent hiểu doanh nghiệp qua ba lớp: `src/luat-chung.md` (luật chung, gi�
 
 ## Giấy phép
 
-MIT, © 2026 Tony Hoang (xem [LICENSE](LICENSE)). Dùng thư viện [`zca-js`](https://github.com/RFS-ADRENO/zca-js) (MIT), [`exceljs`](https://github.com/exceljs/exceljs) (MIT), [`yaml`](https://github.com/eemeli/yaml) (ISC). Claude Code (Anthropic) và Codex (OpenAI) không đi kèm: bạn tự cài và dùng theo điều khoản của từng nhà cung cấp. Dữ liệu trong `bo-nao-mau/` là hư cấu.
+MIT, © 2026 Tony Hoang (xem [LICENSE](LICENSE)). Dùng thư viện [`zca-js`](https://github.com/RFS-ADRENO/zca-js) (MIT), [`exceljs`](https://github.com/exceljs/exceljs) (MIT), [`yaml`](https://github.com/eemeli/yaml) (ISC). Claude Code (Anthropic) và Codex (OpenAI) không đi kèm: bạn tự cài và dùng theo điều khoản của từng nhà cung cấp. Dữ liệu trong `bo-nao-mau/` là hư cấu. File trong `du-lieu-mau/` thuộc VN Express Tour, được chia sẻ làm ví dụ cho buổi thực hành.

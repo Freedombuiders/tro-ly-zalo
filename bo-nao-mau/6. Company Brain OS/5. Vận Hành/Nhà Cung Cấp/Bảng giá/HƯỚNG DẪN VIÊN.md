@@ -2,12 +2,12 @@
 dong-bo: tu-dong
 nguon: "Bảng giá nhà cung cấp"
 trang-tinh: "HƯỚNG DẪN VIÊN"
-cap-nhat: "22:16 29/10/2026"
+cap-nhat: "22:46 29/10/2026"
 ---
 
 # HƯỚNG DẪN VIÊN
 
-> Tự động đồng bộ từ bảng tính "Bảng giá nhà cung cấp" lúc 22:16 29/10/2026. Đây là dữ liệu mới nhất; sửa trong bảng tính gốc, đừng sửa file này.
+> Tự động đồng bộ từ bảng tính "Bảng giá nhà cung cấp" lúc 22:46 29/10/2026. Đây là dữ liệu mới nhất; sửa trong bảng tính gốc, đừng sửa file này.
 
 BẢNG GIÁ HƯỚNG DẪN VIÊN 2026
 
