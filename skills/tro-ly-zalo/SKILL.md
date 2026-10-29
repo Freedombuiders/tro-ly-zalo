@@ -1,6 +1,6 @@
 ---
 name: tro-ly-zalo
-description: Tải Trợ lý Zalo từ GitHub (hoanghd218/tro-ly-zalo) về máy, cài Node.js nếu thiếu, cài thư viện, rồi cài agent đọc Bộ não số 2 của doanh nghiệp và chăm sóc khách, đại lý hoặc nhân viên trong các nhóm Zalo. Dùng khi người dùng gõ /tro-ly-zalo hoặc $tro-ly-zalo, hoặc nói "cài trợ lý Zalo", "tải trợ lý Zalo", "tạo agent chăm sóc nhóm Zalo", "chatbot Zalo cho doanh nghiệp".
+description: Tải Trợ lý Zalo từ GitHub (Freedombuiders/tro-ly-zalo) về máy, cài Node.js nếu thiếu, cài thư viện, rồi cài agent đọc Bộ não số 2 của doanh nghiệp và chăm sóc khách, đại lý hoặc nhân viên trong các nhóm Zalo. Dùng khi người dùng gõ /tro-ly-zalo hoặc $tro-ly-zalo, hoặc nói "cài trợ lý Zalo", "tải trợ lý Zalo", "tạo agent chăm sóc nhóm Zalo", "chatbot Zalo cho doanh nghiệp".
 ---
 
 # Tải và cài Trợ lý Zalo
@@ -22,18 +22,18 @@ Chưa có thì tải về:
 
 - **Có Git dùng được** thì clone. Trên macOS chỉ coi là có Git khi `xcode-select -p` chạy thành công (nếu không, gõ `git` sẽ bật hộp thoại cài Xcode). Trên Windows, Linux thì kiểm tra `git --version`.
   ```bash
-  git clone --depth 1 https://github.com/hoanghd218/tro-ly-zalo.git ~/tro-ly-zalo
+  git clone --depth 1 https://github.com/Freedombuiders/tro-ly-zalo.git ~/tro-ly-zalo
   ```
 - **Không có Git** thì tải file ZIP:
   - macOS (dùng `ditto`, **không dùng `unzip`**: `unzip` của macOS làm hỏng tên file tiếng Việt có dấu):
     ```bash
-    curl -fL -o /tmp/tro-ly-zalo.zip https://github.com/hoanghd218/tro-ly-zalo/archive/refs/heads/main.zip \
+    curl -fL -o /tmp/tro-ly-zalo.zip https://github.com/Freedombuiders/tro-ly-zalo/archive/refs/heads/main.zip \
       && rm -rf /tmp/tro-ly-zalo-main && ditto -x -k /tmp/tro-ly-zalo.zip /tmp && mv /tmp/tro-ly-zalo-main ~/tro-ly-zalo
     ```
   - Linux: như trên nhưng thay `ditto -x -k /tmp/tro-ly-zalo.zip /tmp` bằng `unzip -q /tmp/tro-ly-zalo.zip -d /tmp`.
   - Windows PowerShell:
     ```powershell
-    Invoke-WebRequest https://github.com/hoanghd218/tro-ly-zalo/archive/refs/heads/main.zip -OutFile "$env:TEMP\tro-ly-zalo.zip"
+    Invoke-WebRequest https://github.com/Freedombuiders/tro-ly-zalo/archive/refs/heads/main.zip -OutFile "$env:TEMP\tro-ly-zalo.zip"
     Expand-Archive "$env:TEMP\tro-ly-zalo.zip" -DestinationPath $env:TEMP -Force
     Move-Item "$env:TEMP\tro-ly-zalo-main" "$HOME\tro-ly-zalo"
     ```

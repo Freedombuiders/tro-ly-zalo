@@ -15,7 +15,7 @@ Kéo thả thư mục Bộ não số 2 từ Finder hoặc File Explorer vào khu
 
 ```text
 Tải và cài Trợ lý Zalo cho tôi: đọc rồi làm theo đúng hướng dẫn ở
-https://raw.githubusercontent.com/hoanghd218/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md
+https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md
 Bộ não số 2 của tôi ở thư mục: <kéo thả thư mục Bộ não số 2 vào đây>
 Hãy đọc để hiểu toàn bộ doanh nghiệp, hỏi tôi những gì còn thiếu, rồi tạo agent chăm sóc khách hàng cho các nhóm Zalo tôi chỉ định.
 ```
@@ -24,7 +24,7 @@ Hãy đọc để hiểu toàn bộ doanh nghiệp, hỏi tôi những gì còn 
 
 ```text
 Tải và cài Trợ lý Zalo cho tôi: đọc rồi làm theo đúng hướng dẫn ở
-https://raw.githubusercontent.com/hoanghd218/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md
+https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md
 Bộ não số 2 của tôi ở thư mục: <kéo thả thư mục Bộ não số 2 vào đây>
 Danh sách sản phẩm, lịch, giá của tôi ở Google Sheet: <dán link Google Sheet>
 Hãy đọc để hiểu toàn bộ doanh nghiệp, hỏi tôi những gì còn thiếu, rồi tạo agent AI Sales trong các nhóm đại lý và cộng tác viên: nhặt sản phẩm phù hợp, kiểm tra còn chỗ hay hết chỗ, trả mã sản phẩm và hoa hồng, chuyển sales khi họ muốn giữ chỗ.
@@ -36,7 +36,7 @@ Google Sheet cần bật Chia sẻ > "Bất kỳ ai có đường liên kết" >
 
 ```text
 Tải và cài Trợ lý Zalo cho tôi: đọc rồi làm theo đúng hướng dẫn ở
-https://raw.githubusercontent.com/hoanghd218/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md
+https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md
 Bộ não số 2 của tôi ở thư mục: <kéo thả thư mục Bộ não số 2 vào đây>
 Hãy đọc để hiểu toàn bộ doanh nghiệp, hỏi tôi những gì còn thiếu, rồi tạo agent hỗ trợ nhân viên nội bộ trong các nhóm Zalo tôi chỉ định: trả lời quy trình, nội quy, chính sách, và lập báo giá, proposal từ bảng giá nhà cung cấp.
 ```
@@ -45,7 +45,7 @@ Hãy đọc để hiểu toàn bộ doanh nghiệp, hỏi tôi những gì còn 
 
 ```text
 Tải và cài Trợ lý Zalo cho tôi: đọc rồi làm theo đúng hướng dẫn ở
-https://raw.githubusercontent.com/hoanghd218/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md
+https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md
 Tôi chưa có bộ não: dùng bộ não mẫu (công ty du lịch Sen Vàng) để xem thử agent trả lời thế nào trước khi nối Zalo.
 ```
 
@@ -71,12 +71,12 @@ Chạy trợ lý hằng ngày, ở một cửa sổ terminal riêng:
 
 ```bash
 # macOS
-curl -fsSL https://raw.githubusercontent.com/hoanghd218/tro-ly-zalo/main/cai-skill.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/cai-skill.sh | bash
 ```
 
 ```powershell
 # Windows PowerShell
-irm https://raw.githubusercontent.com/hoanghd218/tro-ly-zalo/main/cai-skill.ps1 | iex
+irm https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/cai-skill.ps1 | iex
 ```
 
 Sau đó mở Claude Code gõ `/tro-ly-zalo`, hoặc mở Codex gõ `$tro-ly-zalo`.

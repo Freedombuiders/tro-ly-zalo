@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Cài skill "tro-ly-zalo" cho Claude Code và Codex. Sau đó mở Claude Code gõ /tro-ly-zalo, hoặc Codex gõ $tro-ly-zalo.
-#   curl -fsSL https://raw.githubusercontent.com/hoanghd218/tro-ly-zalo/main/cai-skill.sh | bash
+#   curl -fsSL https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/cai-skill.sh | bash
 set -euo pipefail
 
-URL="https://raw.githubusercontent.com/hoanghd218/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md"
+URL="https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md"
 TMP="$(mktemp)"
 curl -fsSL "$URL" -o "$TMP"
 

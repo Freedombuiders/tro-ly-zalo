@@ -1,8 +1,8 @@
 # Cài skill "tro-ly-zalo" cho Claude Code và Codex trên Windows. Sau đó mở Claude Code gõ /tro-ly-zalo, hoặc Codex gõ $tro-ly-zalo.
-#   irm https://raw.githubusercontent.com/hoanghd218/tro-ly-zalo/main/cai-skill.ps1 | iex
+#   irm https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/cai-skill.ps1 | iex
 $ErrorActionPreference = 'Stop'
 
-$url = 'https://raw.githubusercontent.com/hoanghd218/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md'
+$url = 'https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md'
 $codexHome = if ($env:CODEX_HOME) { $env:CODEX_HOME } else { Join-Path $HOME '.codex' }
 $noiDung = (Invoke-WebRequest -Uri $url -UseBasicParsing).Content
 

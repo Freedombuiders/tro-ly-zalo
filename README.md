@@ -21,7 +21,7 @@ Mở Claude Code (`claude`) hoặc Codex (`codex`) ở thư mục bất kỳ r�
 
 ```text
 Tải và cài Trợ lý Zalo cho tôi: đọc rồi làm theo đúng hướng dẫn ở
-https://raw.githubusercontent.com/hoanghd218/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md
+https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md
 Bộ não số 2 của tôi ở thư mục: <kéo thả thư mục Bộ não số 2 vào đây>
 Hãy đọc để hiểu toàn bộ doanh nghiệp, hỏi tôi những gì còn thiếu, rồi tạo agent chăm sóc khách hàng cho các nhóm Zalo tôi chỉ định.
 ```
@@ -34,12 +34,12 @@ Mở Terminal (Windows: PowerShell), chạy một lệnh:
 
 ```bash
 # macOS, Linux
-curl -fsSL https://raw.githubusercontent.com/hoanghd218/tro-ly-zalo/main/cai-skill.sh | bash
+curl -fsSL https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/cai-skill.sh | bash
 ```
 
 ```powershell
 # Windows PowerShell
-irm https://raw.githubusercontent.com/hoanghd218/tro-ly-zalo/main/cai-skill.ps1 | iex
+irm https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/cai-skill.ps1 | iex
 ```
 
 Rồi mở Claude Code gõ `/tro-ly-zalo`, hoặc mở Codex gõ `$tro-ly-zalo`.
