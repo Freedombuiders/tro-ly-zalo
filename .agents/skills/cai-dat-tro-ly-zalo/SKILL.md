@@ -52,7 +52,8 @@ Hỏi gộp một lần, đánh số, mỗi câu có gợi ý trả lời mặc 
 3. Agent được làm gì, tuyệt đối không được nói gì (ví dụ: không nói hoa hồng với khách lẻ, không hứa giảm giá, không xác nhận giữ chỗ).
 4. Khi cần người thật (khách muốn chốt, khiếu nại, câu chưa có dữ liệu): ai phụ trách? Có nhóm Zalo quản lý để agent báo vào không?
 5. Có bảng tính sản phẩm, giá, lịch, tồn kho (Google Sheet hoặc file Excel) cần agent đọc bản mới nhất không? Gửi link.
-6. Trong nhóm, agent đọc mọi tin rồi tự quyết trả lời (mặc định cho nhóm khách, đại lý) hay chỉ trả lời khi được tag (mặc định cho nhóm nội bộ đông người)?
+6. Chính sách giá đoàn đông, ưu đãi, đặt cọc (bao nhiêu, hạn nào), thời gian giữ chỗ, hoa hồng đại lý là gì? (Không có thì agent không chốt được khách mặc cả hay khách hỏi cọc, chỉ biết hẹn kiểm tra.)
+7. Trong nhóm, agent đọc mọi tin rồi tự quyết trả lời (mặc định cho nhóm khách, đại lý) hay chỉ trả lời khi được tag (mặc định cho nhóm nội bộ đông người)?
 
 ## 5. Viết agent
 

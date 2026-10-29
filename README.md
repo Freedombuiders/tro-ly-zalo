@@ -135,6 +135,8 @@ dong_bo:
       tai_lich_trinh: true                   # tải cả các Google Docs được link trong bảng (lịch trình)
 ```
 
+Agent giỏi đến đâu là do bộ não đầy đủ đến đâu. Giả lập cho thấy chỗ agent hay phải hẹn "em kiểm tra rồi báo" nhất là chính sách giá đoàn, ưu đãi, đặt cọc, hạn giữ chỗ: ghi rõ những điều này vào bộ não thì agent tự chốt được.
+
 Agent hiểu doanh nghiệp qua ba lớp: `src/luat-chung.md` (luật chung, giống nhau mọi doanh nghiệp), `agents/tom-tat-doanh-nghiep.md` (tóm tắt bộ não, Claude Code viết lúc cài) và `agents/<id>/vai-tro.md` (vai trò từng agent). Sửa ba file này bằng tiếng Việt thường là đổi được cách agent làm việc.
 
 ## An toàn
