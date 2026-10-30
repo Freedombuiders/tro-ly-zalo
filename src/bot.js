@@ -282,7 +282,7 @@ export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgen
   api.listener.on('error', (err) => log(`[${gio()}] Lỗi kết nối Zalo: ${String(err?.message ?? err)}`));
   api.listener.on('closed', (code) => {
     if (MA_NICK_MO_NOI_KHAC.includes(code)) {
-      log(`[${gio()}] Zalo ngắt kết nối vì nick vừa mở ở nơi khác (mã ${code}). Mỗi nick chỉ chạy được ở một nơi: tắt nơi kia rồi chạy lại npm start.`);
+      log(`[${gio()}] Zalo ngắt kết nối vì nick vừa mở ở nơi khác (mã ${code}). Mỗi nick chỉ chạy được ở một nơi: tắt nơi kia rồi chạy lại npm run chay-nen.`);
       process.exitCode = 1;
       return;
     }

@@ -1,6 +1,6 @@
 # Prompt cho buổi thực hành
 
-Chỉ cần **một câu prompt**, không cần cài gì trước ngoài Claude Code hoặc Codex. Agent tự tải mã nguồn, cài Node.js nếu máy chưa có (hỏi bạn trước), cài thư viện, đọc Bộ não số 2, hỏi bạn vài câu, chạy thử, mở mã QR Zalo rồi giao nhóm.
+Chỉ cần **một câu prompt**, không cần cài gì trước ngoài Claude Code hoặc Codex. Agent tự tải mã nguồn, cài Node.js nếu máy chưa có (hỏi bạn trước), cài thư viện, đọc Bộ não số 2, hỏi bạn vài câu, chạy thử, mở mã QR Zalo, giao nhóm rồi chạy trợ lý luôn (trả lời thật ngay).
 
 ## Cách dùng
 
@@ -56,8 +56,10 @@ Không cần bộ não riêng: dùng bảng lịch khởi hành tour ghép quố
 ```text
 Tải và cài Trợ lý Zalo cho tôi: đọc rồi làm theo đúng hướng dẫn ở
 https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md
-Tôi muốn thực hành với dữ liệu thật của VN Express Tour có sẵn trong mã nguồn (npm run mau-vne): cho tôi hỏi thử agent tư vấn khách và agent AI Sales, rồi nối Zalo.
+Tôi muốn thực hành với dữ liệu thật của VN Express Tour có sẵn trong mã nguồn (npm run mau-vne): cho tôi hỏi thử agent tư vấn khách và agent AI Sales, rồi nối Zalo và chạy luôn.
 ```
+
+Tin nhắn soạn sẵn để gửi học viên: [THUC-HANH-VNE.md](THUC-HANH-VNE.md).
 
 ## Sau khi cài xong
 
@@ -70,13 +72,14 @@ Mở Claude Code hoặc Codex trong thư mục `tro-ly-zalo` (macOS: `cd ~/tro-l
 | Agent trả lời sai, thiếu | `Agent trả lời sai câu này: <câu>. Sửa giúp tôi` |
 | Đổi giọng | `Cho agent nói ngắn hơn, xưng "mình" gọi "bạn"` |
 | Thử với khách giả lập | `Giả lập khách từ dễ tính đến khó tính để test agent, rồi sửa agent theo kết quả` |
-| Bật gửi thật | `Bật gửi thật cho agent chăm sóc khách hàng` |
+| Xem trước rồi mới gửi | `Chuyển agent chăm sóc khách hàng về nháp` |
+| Tắt, bật lại trợ lý | `Tắt trợ lý` / `Chạy trợ lý` |
 | Thêm ảnh | `Đây là thư mục ảnh sản phẩm: <kéo thả thư mục>, chép vào bộ não để agent gửi kèm` |
 
-Chạy trợ lý hằng ngày, ở một cửa sổ terminal riêng:
+Cài xong trợ lý chạy ngầm và trả lời thật ngay, vẫn chạy khi đóng cửa sổ. Khởi động lại máy thì chạy lại:
 
-- macOS: `cd ~/tro-ly-zalo && npm start`
-- Windows: `cd $HOME\tro-ly-zalo; npm.cmd start`
+- macOS: `cd ~/tro-ly-zalo && npm run chay-nen`
+- Windows: `cd $HOME\tro-ly-zalo; npm.cmd run chay-nen`
 
 ## Không muốn dán prompt dài? Cài skill một lần
 

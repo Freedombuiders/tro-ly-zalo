@@ -7,7 +7,7 @@ description: Cài Trợ lý Zalo từ đầu đến khi agent chăm sóc đượ
 
 Bạn (Claude Code hoặc Codex) đang ở thư mục gốc của repo. Người dùng là chủ hoặc nhân viên doanh nghiệp, thường không phải lập trình viên: nói tiếng Việt, ngắn, mỗi lần một bước, báo đang ở bước nào. Bước nào đã xong ở lần trước thì bỏ qua.
 
-**Luôn hỏi trước, không tự làm:** cài phần mềm hệ thống (Node.js), đăng nhập tài khoản (Claude, Codex, Zalo), chuyển agent sang **tự gửi**, ghi vào bộ não của người dùng.
+**Luôn hỏi trước, không tự làm:** cài phần mềm hệ thống (Node.js), đăng nhập tài khoản (Claude, Codex, Zalo), ghi vào bộ não của người dùng. Còn chạy trợ lý thì **không hỏi**: cài xong là chạy luôn (mục 9).
 
 ## 1. Chuẩn bị
 
@@ -61,7 +61,7 @@ Hỏi gộp một lần, đánh số, mỗi câu có gợi ý trả lời mặc 
 - `agents/tom-tat-doanh-nghiep.md`: tóm tắt doanh nghiệp tối đa 40 dòng, mọi agent đọc trong mỗi lượt trả lời. Gồm: doanh nghiệp là ai, sản phẩm chính, liên hệ và người phụ trách, giọng; và mục **"Tra cứu trong bộ não"** liệt kê đường dẫn thật (tính từ thư mục bộ não) nơi có giá, lịch, chính sách, câu hỏi thường gặp, quy trình. Xem file mẫu đang có để làm theo.
 - `agents/<id>/vai-tro.md` cho từng agent: id chữ thường không dấu, nối bằng gạch ngang (ví dụ `cskh-khach-hang`). Viết theo mẫu ba agent có sẵn: đối tượng chăm sóc, danh sách việc, khi nào chuyển người thật, xưng hô, điều tuyệt đối không nói. Chỉ ghi điều có trong bộ não hoặc người dùng vừa nói.
 - Ảnh: agent tự gửi kèm ảnh (jpg, png, webp) có trong bộ não khi hợp. Gợi ý người dùng để ảnh sản phẩm, tour, khách sạn vào bộ não với **tên file nói rõ nội dung** (ví dụ `2. Marketing/Thiết Kế & Hình Ảnh/Tour Nhật Bản 6N5Đ.jpg`).
-- `cau-hinh.yaml`: khai báo agent trong `agents:` (id, ten, `nhom: []`, `tra_loi_khi`, `che_do: nhap`). Xoá các agent mẫu Sen Vàng và thư mục `agents/<id>` của chúng nếu người dùng không dùng bộ não mẫu.
+- `cau-hinh.yaml`: khai báo agent trong `agents:` (id, ten, `nhom: []`, `tra_loi_khi`, `che_do: tu-gui`). Xoá các agent mẫu Sen Vàng và thư mục `agents/<id>` của chúng nếu người dùng không dùng bộ não mẫu.
 - Có bảng tính: thêm vào `dong_bo.nguon` (ten, link, `luu_vao` là thư mục trong bộ não, ví dụ `6. Company Brain OS/1. Sản Phẩm & R&D/Danh Mục Sản Phẩm/<tên>`), chạy `npm run dong-bo`, mở một file kết quả kiểm tra đọc được. Lỗi tải Google Sheet: hướng dẫn bật Chia sẻ > "Bất kỳ ai có đường liên kết" > Người xem.
 - Chạy lại `npm run kiem-tra`.
 
@@ -94,18 +94,26 @@ npm run nhom                                   # danh sách nhóm và id
 npm run giao <id-agent> <id-nhóm> [id-nhóm khác...]
 ```
 
-Cho người dùng chọn nhóm theo tên, bạn tự tra id. Có nhóm quản lý để nhận cảnh báo thì ghi id vào `nhom_bao_cao`.
+Hỏi một lần, cho người dùng chọn nhóm theo tên, bạn tự tra id. Họ chưa muốn giao nhóm nào thì bỏ qua: mặc định bên dưới đã đủ để chạy. Có nhóm quản lý để nhận cảnh báo thì ghi id vào `nhom_bao_cao`.
 
 Mặc định (`mac_dinh` trong `cau-hinh.yaml`), một agent trực trả lời **mọi tin nhắn riêng 1-1** và **mọi nhóm chưa giao khi có người tag nick**. Đặt `mac_dinh.agent` là agent chăm khách vừa tạo. Người dùng không muốn thì đặt `chat_rieng: false` hoặc `nhom_khi_duoc_tag: false`.
 
 ## 9. Chạy
 
-Bảo người dùng mở **một terminal mới** trong thư mục dự án và chạy (để trợ lý vẫn chạy khi đóng phiên này):
+Đăng nhập Zalo xong thì chạy luôn, không hỏi lại:
 
 ```bash
-npm start
+npm run chay-nen
 ```
 
-Ban đầu mọi agent ở chế độ **nháp** (`che_do: nhap`): câu trả lời chỉ in ra terminal, chưa gửi vào nhóm. Thử bằng một nick khác, hoặc từ chính điện thoại của nick này gõ `#thu <câu hỏi>` (tin của chính nick không có `#thu` được coi là nhân viên trả lời, agent nhường 30 phút). Khi người dùng hài lòng và **nói rõ** muốn bật gửi thật: đổi `che_do: tu-gui` cho agent đó trong `cau-hinh.yaml`, rồi khởi động lại (`Ctrl+C`, `npm start`).
+Lệnh khởi động trợ lý chạy ngầm (vẫn chạy khi đóng Claude Code hay Codex), chờ kết nối Zalo rồi in danh sách agent và chế độ. Đang có bản chạy thì nó khởi động lại. Sau mỗi lần sửa `cau-hinh.yaml`, `vai-tro.md`, tóm tắt hay giao nhóm, chạy lại lệnh này để áp dụng. Codex: lệnh cần mạng, xin chạy ngoài sandbox.
+
+Mọi agent mặc định ở chế độ **tự gửi** (`che_do: tu-gui`): trả lời thật mọi tin nhắn riêng, nhóm được giao, và nhóm khác khi được tag. Báo người dùng đúng một câu như vậy. Cách thử: nhờ một nick khác nhắn, hoặc từ chính điện thoại của nick này gõ `#thu <câu hỏi>` (tin của chính nick không có `#thu` được coi là nhân viên trả lời, agent nhường 30 phút). Người dùng hỏi trợ lý vừa trả lời gì thì đọc cuối `data/bot.log` và kể lại.
+
+| Người dùng nói | Làm |
+|---|---|
+| "chuyển về nháp", "xem trước rồi mới gửi" | `che_do: nhap` cho agent đó (tin mặc định: `mac_dinh.che_do`), rồi `npm run chay-nen` |
+| "tắt trợ lý" | `npm run dung` |
+| "chạy trợ lý", vừa khởi động lại máy | `npm run chay-nen` |
 
 Kết thúc bằng tóm tắt: agent nào, chăm nhóm nào, chế độ gì; câu hỏi chưa có dữ liệu được ghi vào `Chờ Duyệt/Câu hỏi agent chưa trả lời được.md` trong bộ não để bổ sung dần.

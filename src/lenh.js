@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Lệnh dòng: chay | dang-nhap | nhom | giao | thu | dong-bo | kiem-tra | mau-vne
+// Lệnh dòng: chay | chay-nen | dung | dang-nhap | nhom | giao | thu | dong-bo | kiem-tra | mau-vne
 import fs from 'node:fs';
 import path from 'node:path';
 import readline from 'node:readline/promises';
@@ -7,6 +7,7 @@ import YAML from 'yaml';
 import { FILE_CAU_HINH, FILE_TOM_TAT, GOC, THU_MUC_DATA, docCauHinh, fileVaiTro, kiemTraCauHinh, timAgent } from './cau-hinh.js';
 import { chayLenh, hoiAgent } from './agent.js';
 import { chayBot, gio } from './bot.js';
+import { chayNen, dung, giuCho, pidDangChay } from './chay-nen.js';
 import { dongBoTatCa } from './dong-bo.js';
 import { KHACH_MAU, giaLap } from './gia-lap.js';
 import { coPhien, dangNhapQR, ketNoi, layNhom } from './zalo.js';
@@ -46,7 +47,9 @@ async function kiemTra() {
   }
   for (const loi of kiemTraCauHinh(ch)) if (!/vai-tro\.md|bộ não/.test(loi)) dong(false, loi);
   dong(coPhien(), 'Phiên Zalo đã lưu', 'Chạy: npm run dang-nhap');
-  console.log(ok ? '\nSẵn sàng. Chạy: npm start' : '\nCòn mục cần sửa ở trên.');
+  const pid = pidDangChay();
+  if (pid) console.log(`\nTrợ lý đang chạy ngầm (tiến trình ${pid}). Khởi động lại: npm run chay-nen. Tắt: npm run dung`);
+  else console.log(ok ? '\nSẵn sàng. Chạy: npm run chay-nen' : '\nCòn mục cần sửa ở trên.');
 }
 
 async function nhom() {
@@ -75,7 +78,7 @@ function giao() {
     if (j === i || moi.length !== cu.length) a.set('nhom', doc.createNode(moi, { flow: true }));
   });
   fs.writeFileSync(FILE_CAU_HINH, doc.toString());
-  console.log(`Đã giao ${dsNhom.join(', ')} cho ${idAgent}. Khởi động lại (npm start) để áp dụng.`);
+  console.log(`Đã giao ${dsNhom.join(', ')} cho ${idAgent}. Khởi động lại (npm run chay-nen) để áp dụng.`);
 }
 
 async function thu() {
@@ -152,6 +155,7 @@ async function giaLapLenh() {
 }
 
 async function chay() {
+  giuCho();
   const ch = docCauHinh();
   const loi = kiemTraCauHinh(ch);
   if (loi.length) throw new Error(`Cấu hình chưa đúng:\n- ${loi.join('\n- ')}\n(Chạy npm run kiem-tra để xem chi tiết)`);
@@ -171,7 +175,7 @@ async function chay() {
       : cheDo(md.nhom_khi_duoc_tag && !md.chat_rieng ? md.che_do_nhom : md.che_do);
     console.log(`  - Mặc định: ${timAgent(ch, md.agent).ten} (${md.agent}) trả lời ${viec}, ${kieu}`);
   }
-  console.log('Nhấn Ctrl+C để dừng.\n');
+  console.log(process.env.TRO_LY_NEN ? 'Tắt: npm run dung\n' : 'Nhấn Ctrl+C để dừng.\n');
 }
 
 /** Thực hành với dữ liệu thật của VN Express Tour: chép bộ não, agent, cấu hình mẫu trong mau-vne/ rồi đồng bộ. */
@@ -204,22 +208,26 @@ async function mauVne() {
     await dongBoTatCa(chiBang(docCauHinh()));
   }
   if (!coDuLieu()) throw new Error('Chưa đồng bộ được dữ liệu VNE, xem lỗi ở trên.');
-  console.log('Đã có bảng lịch khởi hành. Đang tải hơn 500 lịch trình chi tiết (lần đầu khoảng 5-10 phút; bị ngắt thì lần sau tải tiếp, npm start cũng tự tải tiếp)...');
+  console.log('Đã có bảng lịch khởi hành. Đang tải hơn 500 lịch trình chi tiết (lần đầu khoảng 5-10 phút; bị ngắt thì lần sau tải tiếp, trợ lý khi chạy cũng tự tải tiếp)...');
   await dongBoTatCa(docCauHinh());
   console.log(`
 Xong. Bộ não: ${ch.bo_nao}
-Agent: tu-van-vne (khách lẻ, mặc định cho tin riêng) và ai-sales-vne (nhóm đại lý, CTV), đang ở chế độ NHÁP.
+Agent: tu-van-vne (khách lẻ, mặc định cho tin riêng) và ai-sales-vne (nhóm đại lý, CTV), đang ở chế độ TỰ GỬI (trả lời thật vào Zalo).
 Thử ngay:
   npm run thu tu-van-vne "nhà mình 4 người muốn đi Quảng Châu tháng 12"
   npm run thu ai-sales-vne "Lệ Giang tháng 12 còn chỗ không em"
-Nối Zalo: npm run dang-nhap, rồi npm start.${dangDungVne ? '' : '\nCấu hình cũ đã cất ở data/cau-hinh.truoc-vne.yaml.'}`);
+Nối Zalo: npm run dang-nhap, rồi npm run chay-nen.${dangDungVne ? '' : '\nCấu hình cũ đã cất ở data/cau-hinh.truoc-vne.yaml.'}`);
 }
 
 const LENH = {
   chay,
+  'chay-nen': () => chayNen(),
+  dung: () => dung(),
   'dang-nhap': async () => {
+    // Đăng nhập lại sẽ đá phiên của bản đang chạy, nên tắt nó trước.
+    if (await dung({ log: () => {} })) console.log('Đã tắt trợ lý đang chạy để đăng nhập lại.');
     await dangNhapQR();
-    console.log('Đăng nhập Zalo thành công, đã lưu phiên. Tiếp theo: npm run nhom để xem id các nhóm.');
+    console.log('Đăng nhập Zalo thành công, đã lưu phiên. Tiếp theo: npm run chay-nen để chạy trợ lý (npm run nhom để xem id các nhóm).');
   },
   nhom,
   giao,
@@ -231,7 +239,7 @@ const LENH = {
 };
 
 if (!LENH[lenh]) {
-  console.log('Lệnh: npm start | npm run dang-nhap | npm run nhom | npm run giao <agent> <nhóm> | npm run thu [id-agent] ["câu hỏi"] | npm run dong-bo | npm run kiem-tra | npm run mau-vne');
+  console.log('Lệnh: npm start | npm run chay-nen | npm run dung | npm run dang-nhap | npm run nhom | npm run giao <agent> <nhóm> | npm run thu [id-agent] ["câu hỏi"] | npm run dong-bo | npm run kiem-tra | npm run mau-vne');
   process.exit(1);
 }
 try {

@@ -23,8 +23,9 @@ mac_dinh:
   agent: cskh-khach-hang
   chat_rieng: true
   nhom_khi_duoc_tag: true
-  che_do: nhap
-  # che_do_nhom: tu-gui   # bỏ dấu # để gửi thật ở nhóm khi được tag, tin riêng vẫn theo che_do
+  # tu-gui: trả lời thật vào Zalo ngay khi chạy. nhap: chỉ in ra màn hình để xem trước, không gửi.
+  che_do: tu-gui
+  # che_do_nhom: nhap   # bỏ dấu # nếu muốn nhóm chỉ soạn nháp, tin riêng vẫn theo che_do
 
 # Danh sách agent. Mỗi agent có thư mục agents/<id>/vai-tro.md mô tả vai trò.
 agents:
@@ -35,23 +36,20 @@ agents:
     # moi-tin: đọc mọi tin, tự quyết trả lời hay im lặng
     # khi-duoc-goi: chỉ trả lời khi được tag (@tên nick) hoặc có người trả lời vào tin của agent
     tra_loi_khi: moi-tin
-    # nhap: chỉ in câu trả lời ra màn hình để bạn xem, không gửi. tu-gui: gửi thật vào nhóm.
-    che_do: nhap
-  # che_do_nhom: tu-gui   # bỏ dấu # để gửi thật ở nhóm khi được tag, tin riêng vẫn theo che_do
+    # tu-gui: gửi thật vào Zalo. nhap: chỉ in câu trả lời ra màn hình để bạn xem trước, không gửi.
+    che_do: tu-gui
 
   - id: cskh-khach-hang
     ten: Chăm sóc khách hàng Sen Vàng
     nhom: []
     tra_loi_khi: moi-tin
-    che_do: nhap
-  # che_do_nhom: tu-gui   # bỏ dấu # để gửi thật ở nhóm khi được tag, tin riêng vẫn theo che_do
+    che_do: tu-gui
 
   - id: tro-ly-noi-bo
     ten: Trợ lý nội bộ Sen Vàng
     nhom: []
     tra_loi_khi: khi-duoc-goi
-    che_do: nhap
-  # che_do_nhom: tu-gui   # bỏ dấu # để gửi thật ở nhóm khi được tag, tin riêng vẫn theo che_do
+    che_do: tu-gui
 
 # Đồng bộ bảng tính (Google Sheet hoặc file Excel) vào bộ não, để agent luôn đọc giá và số chỗ mới nhất.
 # Google Sheet phải bật chia sẻ "Bất kỳ ai có đường liên kết đều xem được".

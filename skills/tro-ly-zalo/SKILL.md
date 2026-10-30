@@ -7,7 +7,7 @@ description: Tải Trợ lý Zalo từ GitHub (Freedombuiders/tro-ly-zalo) về 
 
 Người dùng thường mới chỉ cài Claude Code hoặc Codex: máy có thể **chưa có Node.js, chưa có Git**, và họ không phải lập trình viên. Nói tiếng Việt, ngắn, mỗi lần một bước, báo đang ở bước nào. Lệnh lỗi thì đọc lỗi, sửa, thử lại; không bắt người dùng tự gỡ.
 
-**Hỏi trước khi:** cài phần mềm hệ thống (Node.js), đăng nhập tài khoản, bật gửi tin thật. Codex: lệnh tải về và `npm install` cần mạng, hãy xin quyền chạy ngoài sandbox.
+**Hỏi trước khi:** cài phần mềm hệ thống (Node.js), đăng nhập tài khoản. Cài xong thì chạy trợ lý luôn, không hỏi. Codex: lệnh tải về và `npm install` cần mạng, hãy xin quyền chạy ngoài sandbox.
 
 Nhận biết hệ điều hành trước (`uname` hoặc `$env:OS`). Dưới đây `<DA>` là thư mục dự án:
 
@@ -76,7 +76,7 @@ Trên Windows PowerShell dùng `npm.cmd` thay cho `npm` ở mọi lệnh, để 
 
 ## 5. Kết thúc
 
-Tóm tắt cho người dùng: agent nào, chăm nhóm nào, chế độ nháp hay tự gửi. Đưa họ lệnh chạy hằng ngày ở một cửa sổ terminal riêng (để chạy tiếp khi đóng phiên này):
+Skill cài đặt kết thúc bằng `npm run chay-nen`: trợ lý đã chạy ngầm và trả lời thật. Tóm tắt cho người dùng: agent nào, chăm nhóm nào, đang tự gửi. Trợ lý vẫn chạy khi đóng cửa sổ này; muốn tắt thì nói "tắt trợ lý". Khởi động lại máy thì chạy lại:
 
-- macOS, Linux: `cd ~/tro-ly-zalo && npm start`
-- Windows: `cd $HOME\tro-ly-zalo; npm.cmd start`
+- macOS, Linux: `cd ~/tro-ly-zalo && npm run chay-nen`
+- Windows: `cd $HOME\tro-ly-zalo; npm.cmd run chay-nen`

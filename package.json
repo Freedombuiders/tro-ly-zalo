@@ -11,6 +11,8 @@
   },
   "scripts": {
     "start": "node src/lenh.js chay",
+    "chay-nen": "node src/lenh.js chay-nen",
+    "dung": "node src/lenh.js dung",
     "dang-nhap": "node src/lenh.js dang-nhap",
     "nhom": "node src/lenh.js nhom",
     "giao": "node src/lenh.js giao",

@@ -15,8 +15,9 @@ mac_dinh:
   agent: tu-van-vne
   chat_rieng: true
   nhom_khi_duoc_tag: true
-  che_do: nhap
-  # che_do_nhom: tu-gui   # bỏ dấu # để gửi thật ở nhóm khi được tag, tin riêng vẫn theo che_do
+  # tu-gui: trả lời thật vào Zalo ngay khi chạy. nhap: chỉ in ra màn hình để xem trước, không gửi.
+  che_do: tu-gui
+  # che_do_nhom: nhap   # bỏ dấu # nếu muốn nhóm chỉ soạn nháp, tin riêng vẫn theo che_do
 
 agents:
   - id: tu-van-vne
@@ -24,14 +25,14 @@ agents:
     # khách lẻ, gia đình, nhóm bạn
     nhom: []
     tra_loi_khi: moi-tin
-    che_do: nhap
+    che_do: tu-gui
 
   - id: ai-sales-vne
     ten: AI Sales VN Express Tour
     # nhóm đại lý, cộng tác viên: nhặt tour, kiểm tra chỗ, trả mã tour và hoa hồng
     nhom: []
     tra_loi_khi: khi-duoc-goi
-    che_do: nhap
+    che_do: tu-gui
 
 # Đọc thẳng Google Sheet của VNE 15 phút một lần, tải luôn hơn 500 lịch trình Google Docs được link trong bảng.
 # Không có mạng thì đổi link thành: ./du-lieu-mau/VNE3 - LKH TOUR GHÉP QUỐC TẾ.xlsx

@@ -9,7 +9,7 @@
 - Agent chỉ nói điều có trong bộ não của bạn. Không có dữ liệu thì nói thật và gọi người phụ trách, không bịa giá, không tự hứa.
 - Đọc được Google Sheet hoặc file Excel (bảng giá, lịch khởi hành, tồn kho) và cập nhật mỗi 15 phút, nên luôn báo đúng giá và số chỗ còn lại.
 - Nhắn như người thật: trả lời đúng câu hỏi ngay câu đầu, tách thành vài tin ngắn, hiện "đang soạn tin", gọi đúng anh/chị theo cách khách xưng. **Gửi kèm ảnh** có sẵn trong bộ não (ảnh tour, khách sạn, sản phẩm) khi hợp.
-- Mặc định chỉ **soạn nháp** (in ra màn hình). Bạn xem vài hôm thấy ổn mới bật gửi thật cho từng agent.
+- Cài xong là **chạy luôn**: trợ lý chạy ngầm trên máy và trả lời thật. Muốn xem trước rồi mới gửi thì nói với agent "chuyển về nháp" (câu trả lời chỉ in ra màn hình).
 
 ## Bắt đầu: máy chỉ cần có Claude Code hoặc Codex
 
@@ -46,7 +46,7 @@ Rồi mở Claude Code gõ `/tro-ly-zalo`, hoặc mở Codex gõ `$tro-ly-zalo`.
 
 ### Agent sẽ làm gì
 
-Tải mã nguồn về `~/tro-ly-zalo` (Windows: `C:\Users\<tên>\tro-ly-zalo`; không có Git thì tải ZIP), cài Node.js nếu thiếu, cài thư viện, đọc bộ não (bỏ qua `Me.md`), tóm tắt lại doanh nghiệp, hỏi bạn vài câu (chăm ai, xưng hô, điều không được nói, ai nhận việc khi cần người thật, có Google Sheet nào cần đọc), viết vai trò cho agent, **chạy thử vài câu hỏi cho bạn xem**, mở mã QR để bạn quét bằng Zalo, rồi giao nhóm. Cuối cùng đưa bạn lệnh chạy hằng ngày: `cd ~/tro-ly-zalo && npm start`.
+Tải mã nguồn về `~/tro-ly-zalo` (Windows: `C:\Users\<tên>\tro-ly-zalo`; không có Git thì tải ZIP), cài Node.js nếu thiếu, cài thư viện, đọc bộ não (bỏ qua `Me.md`), tóm tắt lại doanh nghiệp, hỏi bạn vài câu (chăm ai, xưng hô, điều không được nói, ai nhận việc khi cần người thật, có Google Sheet nào cần đọc), viết vai trò cho agent, **chạy thử vài câu hỏi cho bạn xem**, mở mã QR để bạn quét bằng Zalo, rồi giao nhóm. Cuối cùng chạy trợ lý ngầm luôn (vẫn chạy khi đóng cửa sổ). Khởi động lại máy thì chạy lại: `cd ~/tro-ly-zalo && npm run chay-nen`.
 
 Đã có mã nguồn (đã clone) thì mở Claude Code hoặc Codex ngay trong thư mục `tro-ly-zalo` và nói "cài đặt trợ lý Zalo".
 
@@ -102,7 +102,9 @@ Giá, lịch và số chỗ nằm trong hai file Excel ở `bo-nao-mau/1. Thu Th
 | `npm run dang-nhap` | Đăng nhập Zalo bằng mã QR |
 | `npm run nhom` | Danh sách nhóm Zalo và id |
 | `npm run giao <id-agent> <id-nhóm>` | Giao nhóm cho agent |
-| `npm start` | Chạy trợ lý. `Ctrl+C` để dừng |
+| `npm run chay-nen` | Chạy trợ lý ngầm (đang chạy thì khởi động lại). Nhật ký ở `data/bot.log` |
+| `npm run dung` | Tắt trợ lý |
+| `npm start` | Chạy trợ lý ở cửa sổ này. `Ctrl+C` để dừng |
 
 ## Cấu hình: `cau-hinh.yaml`
 
@@ -119,14 +121,14 @@ mac_dinh:                                    # agent trực mặc định
   agent: cskh-khach-hang
   chat_rieng: true                           # trả lời mọi tin nhắn riêng 1-1
   nhom_khi_duoc_tag: true                    # nhóm chưa giao: trả lời khi có người tag nick
-  che_do: nhap                               # nhap | tu-gui cho các tin đi theo mặc định
-  che_do_nhom: tu-gui                        # riêng cho nhóm khi được tag (không ghi thì theo che_do)
+  che_do: tu-gui                             # tu-gui | nhap cho các tin đi theo mặc định
+  che_do_nhom: nhap                          # riêng cho nhóm khi được tag (không ghi thì theo che_do)
 agents:
   - id: cskh-khach-hang                      # vai trò ở agents/cskh-khach-hang/vai-tro.md
     ten: Chăm sóc khách hàng
     nhom: ["1234567890"]                     # id nhóm (npm run nhom) hoặc id người tin riêng
     tra_loi_khi: moi-tin                     # moi-tin | khi-duoc-goi (chỉ khi được tag)
-    che_do: nhap                             # nhap (chỉ in ra) | tu-gui (gửi thật)
+    che_do: tu-gui                           # tu-gui (gửi thật) | nhap (chỉ in ra)
 dong_bo:
   moi_phut: 15
   nguon:
@@ -142,7 +144,7 @@ Agent hiểu doanh nghiệp qua ba lớp: `src/luat-chung.md` (luật chung, gi�
 
 ## An toàn
 
-- Mặc định **nháp**: không gửi gì cho đến khi bạn đổi `che_do: tu-gui`.
+- Mặc định **tự gửi**: cài xong là trả lời thật. Muốn xem trước thì đổi `che_do: nhap` (chỉ in câu trả lời ra màn hình), rồi `npm run chay-nen`.
 - Mặc định agent trực trả lời **mọi tin nhắn riêng 1-1** và, ở các nhóm chưa giao cho agent nào, **chỉ khi có người tag nick**. Nhóm đã giao thì theo `tra_loi_khi` của agent đó.
 - Tự thử từ chính điện thoại của nick: gõ `#thu <câu hỏi>` vào nhóm hoặc tin riêng, agent coi như khách hỏi.
 - **Chống người xấu khai thác**, nhiều lớp:
