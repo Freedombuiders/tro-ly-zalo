@@ -7,7 +7,7 @@ description: Tải Trợ lý Zalo từ GitHub (Freedombuiders/tro-ly-zalo) về 
 
 Người dùng thường mới chỉ cài Claude Code hoặc Codex: máy có thể **chưa có Node.js, chưa có Git**, và họ không phải lập trình viên. Nói tiếng Việt, ngắn, mỗi lần một bước, báo đang ở bước nào. Lệnh lỗi thì đọc lỗi, sửa, thử lại; không bắt người dùng tự gỡ.
 
-**Hỏi trước khi:** cài phần mềm hệ thống (Node.js), đăng nhập tài khoản. Cài xong thì chạy trợ lý luôn, không hỏi. Codex: lệnh tải về và `npm install` cần mạng, hãy xin quyền chạy ngoài sandbox.
+**Tự làm, không hỏi:** cài Node.js riêng vào thư mục dự án (bước 2), cài thư viện, chạy trợ lý khi cài xong. **Hỏi trước khi:** cài phần mềm vào hệ thống (chỉ ở phương án dự phòng của bước 2), đăng nhập tài khoản. Codex: lệnh tải về và `npm install` cần mạng, hãy xin quyền chạy ngoài sandbox.
 
 Nhận biết hệ điều hành trước (`uname` hoặc `$env:OS`). Dưới đây `<DA>` là thư mục dự án:
 
@@ -40,22 +40,17 @@ Chưa có thì tải về:
 
 ## 2. Node.js 20 trở lên
 
-Kiểm tra `node -v`. Có v20 trở lên thì sang bước 3. Thiếu hoặc cũ thì hỏi người dùng rồi cài:
+Kiểm tra `node -v`. Có v20 trở lên thì sang bước 3. Thiếu, cũ hơn, hoặc đã có `<DA>/.node` từ lần trước thì **tự cài luôn, không hỏi**: script cài Node.js 22 vào riêng `<DA>/.node`, không cần mật khẩu máy hay quyền quản trị, không đụng tới phần còn lại của máy (khoảng 1 phút, cần mạng; Codex xin chạy ngoài sandbox).
 
-- **Windows**:
-  ```powershell
-  winget install --id OpenJS.NodeJS.LTS -e --accept-source-agreements --accept-package-agreements
-  ```
-  Windows có thể hỏi quyền quản trị, người dùng bấm Yes. Phiên terminal hiện tại chưa nhận PATH mới, nên các lệnh sau dùng đường dẫn đầy đủ `& "C:\Program Files\nodejs\npm.cmd"` (hoặc nhờ người dùng mở lại Claude Code hay Codex). Không có winget thì hướng dẫn tải bản LTS ở https://nodejs.org và cài như phần mềm thường.
-- **macOS**:
-  - Có Homebrew (`brew -v`) thì chạy `brew install node`.
-  - Không có thì tải bộ cài chính thức rồi mở ra:
-    ```bash
-    V=$(curl -fsSL https://nodejs.org/dist/latest-v22.x/SHASUMS256.txt | grep -o 'node-v[0-9.]*\.pkg' | head -1)
-    curl -fL -o ~/Downloads/$V https://nodejs.org/dist/latest-v22.x/$V && open ~/Downloads/$V
-    ```
-    Nhắn người dùng bấm Tiếp tục, Cài đặt và nhập mật khẩu máy. Chờ họ báo xong rồi kiểm tra bằng `/usr/local/bin/node -v`. Nếu `node` chưa có trong PATH của phiên này thì dùng `/usr/local/bin/npm`.
-- **Linux**: hướng dẫn theo https://nodejs.org/en/download (trình quản lý gói của bản phân phối).
+- macOS, Linux: `bash ~/tro-ly-zalo/cai-node.sh`
+- Windows: `powershell -ExecutionPolicy Bypass -File "$HOME\tro-ly-zalo\cai-node.ps1"`
+
+Từ đây **mọi lệnh npm** phải thêm Node vừa cài vào PATH ngay trong lệnh đó (mỗi lệnh chạy trong một shell mới, PATH không giữ lại):
+
+- macOS, Linux: `export PATH="$HOME/tro-ly-zalo/.node/bin:$PATH" && cd ~/tro-ly-zalo && npm ...`
+- Windows: `$env:Path = "$HOME\tro-ly-zalo\.node;$env:Path"; cd $HOME\tro-ly-zalo; npm.cmd ...`
+
+Script lỗi (mạng chặn nodejs.org...) thì hỏi người dùng rồi cài vào hệ thống: Windows `winget install --id OpenJS.NodeJS.LTS -e --accept-source-agreements --accept-package-agreements` (bấm Yes khi hỏi quyền quản trị; phiên này chưa nhận PATH mới nên dùng `& "C:\Program Files\nodejs\npm.cmd"`); macOS có Homebrew thì `brew install node`; không thì hướng dẫn tải bản LTS ở https://nodejs.org.
 
 ## 3. Cài thư viện
 
@@ -63,7 +58,7 @@ Kiểm tra `node -v`. Có v20 trở lên thì sang bước 3. Thiếu hoặc cũ
 cd ~/tro-ly-zalo && npm install
 ```
 
-Trên Windows PowerShell dùng `npm.cmd` thay cho `npm` ở mọi lệnh, để tránh lỗi "running scripts is disabled": `cd $HOME\tro-ly-zalo; npm.cmd install`.
+Trên Windows PowerShell dùng `npm.cmd` thay cho `npm` ở mọi lệnh, để tránh lỗi "running scripts is disabled": `cd $HOME\tro-ly-zalo; npm.cmd install`. Đã cài Node riêng ở bước 2 thì thêm PATH như bước 2.
 
 ## 4. Cài agent
 
@@ -76,7 +71,4 @@ Trên Windows PowerShell dùng `npm.cmd` thay cho `npm` ở mọi lệnh, để 
 
 ## 5. Kết thúc
 
-Skill cài đặt kết thúc bằng `npm run chay-nen`: trợ lý đã chạy ngầm và trả lời thật. Tóm tắt cho người dùng: agent nào, chăm nhóm nào, đang tự gửi. Trợ lý vẫn chạy khi đóng cửa sổ này; muốn tắt thì nói "tắt trợ lý". Khởi động lại máy thì chạy lại:
-
-- macOS, Linux: `cd ~/tro-ly-zalo && npm run chay-nen`
-- Windows: `cd $HOME\tro-ly-zalo; npm.cmd run chay-nen`
+Skill cài đặt kết thúc bằng `npm run chay-nen`: trợ lý đã chạy ngầm và trả lời thật. Tóm tắt cho người dùng: agent nào, chăm nhóm nào, đang tự gửi. Trợ lý vẫn chạy khi đóng cửa sổ này; muốn tắt thì nói "tắt trợ lý". Khởi động lại máy thì mở Claude Code hoặc Codex trong thư mục `tro-ly-zalo` và nói "chạy trợ lý".

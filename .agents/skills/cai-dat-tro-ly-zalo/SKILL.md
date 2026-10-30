@@ -7,7 +7,7 @@ description: Cài Trợ lý Zalo từ đầu đến khi agent chăm sóc đượ
 
 Bạn (Claude Code hoặc Codex) đang ở thư mục gốc của repo. Người dùng là chủ hoặc nhân viên doanh nghiệp, thường không phải lập trình viên: nói tiếng Việt, ngắn, mỗi lần một bước, báo đang ở bước nào. Bước nào đã xong ở lần trước thì bỏ qua.
 
-**Luôn hỏi trước, không tự làm:** cài phần mềm hệ thống (Node.js), đăng nhập tài khoản (Claude, Codex, Zalo), ghi vào bộ não của người dùng. Còn chạy trợ lý thì **không hỏi**: cài xong là chạy luôn (mục 9).
+**Luôn hỏi trước, không tự làm:** cài phần mềm vào hệ thống, đăng nhập tài khoản (Claude, Codex, Zalo), ghi vào bộ não của người dùng. Còn chạy trợ lý thì **không hỏi**: cài xong là chạy luôn (mục 9).
 
 ## 1. Chuẩn bị
 
@@ -17,7 +17,8 @@ node -v                      # cần v20 trở lên (khuyên dùng 22)
 npm run kiem-tra
 ```
 
-- Thiếu Node: hướng dẫn cài Node 22 LTS ở nodejs.org, chờ người dùng cài xong.
+- Thiếu Node hoặc cũ hơn v20: tự cài riêng vào `.node`, không hỏi, không cần mật khẩu máy: `bash cai-node.sh` (Windows: `powershell -ExecutionPolicy Bypass -File cai-node.ps1`).
+- Có thư mục `.node` thì **mọi lệnh npm** phải thêm nó vào PATH ngay trong lệnh đó: `export PATH="$PWD/.node/bin:$PATH" && npm ...` (Windows: `$env:Path = "$PWD\.node;$env:Path"; npm.cmd ...`).
 - `kiem-tra` lần đầu tự tạo `cau-hinh.yaml` từ `cau-hinh.mau.yaml`. Các dấu ✖ về tóm tắt, phiên Zalo là bình thường ở bước này.
 - Claude Code hoặc Codex chưa đăng nhập: gợi ý người dùng gõ `! claude` (hoặc `! codex login`) để đăng nhập.
 - `ai: tu-dong` (mặc định) tự dùng Claude Code nếu máy có, không thì dùng Codex. Model mặc định: `claude-sonnet-5-5`, `gpt-6.1-sol`.

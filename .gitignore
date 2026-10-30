@@ -6,3 +6,4 @@ data/
 # câu hỏi do agent ghi lại khi chạy với bộ não mẫu
 bo-nao-mau/**/Câu hỏi agent chưa trả lời được.md
 bo-nao-vne/
+/.node/

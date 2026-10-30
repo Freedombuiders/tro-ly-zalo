@@ -11,12 +11,13 @@ Mở Terminal (Windows: PowerShell), gõ `claude` (hoặc `codex`), Enter. Dán 
 ```text
 Tải và cài Trợ lý Zalo cho tôi: đọc rồi làm theo đúng hướng dẫn ở
 https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md
+Tôi là người mới: máy thiếu Node.js hay công cụ nào thì tự cài giúp tôi (Node.js cài riêng vào thư mục dự án, không cần mật khẩu máy), lệnh lỗi thì tự sửa, chỉ hỏi tôi khi thật cần.
 Tôi muốn thực hành với dữ liệu thật của VN Express Tour có sẵn trong mã nguồn (npm run mau-vne): cho tôi hỏi thử agent tư vấn khách và agent AI Sales, rồi nối Zalo và chạy luôn.
 ```
 
 ## Bước 2. Đồng ý khi được hỏi
 
-Agent xin quyền chạy lệnh hoặc cài Node.js thì chọn Đồng ý. Máy Mac có thể hỏi mật khẩu máy.
+Agent xin quyền chạy lệnh thì chọn Đồng ý. Máy chưa có Node.js hay Git cũng không sao: agent tự lo, không cần mật khẩu máy, bạn không phải cài gì thêm.
 
 ## Bước 3. Hỏi thử
 

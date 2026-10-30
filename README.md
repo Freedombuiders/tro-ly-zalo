@@ -13,7 +13,7 @@
 
 ## Bắt đầu: máy chỉ cần có Claude Code hoặc Codex
 
-Cần sẵn: **Claude Code** (gói Claude Pro trở lên) hoặc **Codex** (gói ChatGPT Plus trở lên) đã đăng nhập, một **nick Zalo** cho agent dùng (nên là nick phụ), và thư mục **Bộ não số 2** của doanh nghiệp. Node.js, Git, thư viện: agent tự kiểm tra và cài giúp (hỏi bạn trước).
+Cần sẵn: **Claude Code** (gói Claude Pro trở lên) hoặc **Codex** (gói ChatGPT Plus trở lên) đã đăng nhập, một **nick Zalo** cho agent dùng (nên là nick phụ), và thư mục **Bộ não số 2** của doanh nghiệp. Node.js, Git, thư viện: agent tự kiểm tra và cài giúp. Node.js được cài riêng vào thư mục dự án, không cần mật khẩu máy.
 
 ### Cách 1: dán một câu
 
@@ -22,6 +22,7 @@ Mở Claude Code (`claude`) hoặc Codex (`codex`) ở thư mục bất kỳ r�
 ```text
 Tải và cài Trợ lý Zalo cho tôi: đọc rồi làm theo đúng hướng dẫn ở
 https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md
+Tôi là người mới: máy thiếu Node.js hay công cụ nào thì tự cài giúp tôi (Node.js cài riêng vào thư mục dự án, không cần mật khẩu máy), lệnh lỗi thì tự sửa, chỉ hỏi tôi khi thật cần.
 Bộ não số 2 của tôi ở thư mục: <kéo thả thư mục Bộ não số 2 vào đây>
 Hãy đọc để hiểu toàn bộ doanh nghiệp, hỏi tôi những gì còn thiếu, rồi tạo agent chăm sóc khách hàng cho các nhóm Zalo tôi chỉ định.
 ```
@@ -46,7 +47,7 @@ Rồi mở Claude Code gõ `/tro-ly-zalo`, hoặc mở Codex gõ `$tro-ly-zalo`.
 
 ### Agent sẽ làm gì
 
-Tải mã nguồn về `~/tro-ly-zalo` (Windows: `C:\Users\<tên>\tro-ly-zalo`; không có Git thì tải ZIP), cài Node.js nếu thiếu, cài thư viện, đọc bộ não (bỏ qua `Me.md`), tóm tắt lại doanh nghiệp, hỏi bạn vài câu (chăm ai, xưng hô, điều không được nói, ai nhận việc khi cần người thật, có Google Sheet nào cần đọc), viết vai trò cho agent, **chạy thử vài câu hỏi cho bạn xem**, mở mã QR để bạn quét bằng Zalo, rồi giao nhóm. Cuối cùng chạy trợ lý ngầm luôn (vẫn chạy khi đóng cửa sổ). Khởi động lại máy thì chạy lại: `cd ~/tro-ly-zalo && npm run chay-nen`.
+Tải mã nguồn về `~/tro-ly-zalo` (Windows: `C:\Users\<tên>\tro-ly-zalo`; không có Git thì tải ZIP), cài Node.js nếu thiếu, cài thư viện, đọc bộ não (bỏ qua `Me.md`), tóm tắt lại doanh nghiệp, hỏi bạn vài câu (chăm ai, xưng hô, điều không được nói, ai nhận việc khi cần người thật, có Google Sheet nào cần đọc), viết vai trò cho agent, **chạy thử vài câu hỏi cho bạn xem**, mở mã QR để bạn quét bằng Zalo, rồi giao nhóm. Cuối cùng chạy trợ lý ngầm luôn (vẫn chạy khi đóng cửa sổ). Khởi động lại máy thì mở Claude Code hoặc Codex trong thư mục `tro-ly-zalo` và nói "chạy trợ lý".
 
 Đã có mã nguồn (đã clone) thì mở Claude Code hoặc Codex ngay trong thư mục `tro-ly-zalo` và nói "cài đặt trợ lý Zalo".
 
@@ -165,6 +166,7 @@ Agent hiểu doanh nghiệp qua ba lớp: `src/luat-chung.md` (luật chung, gi�
 
 | Hiện tượng | Cách xử lý |
 |---|---|
+| `node: command not found` khi tự gõ lệnh | Node.js được cài riêng trong dự án: macOS `export PATH="$HOME/tro-ly-zalo/.node/bin:$PATH"`, Windows `$env:Path = "$HOME\tro-ly-zalo\.node;$env:Path"`. Hoặc nhờ agent chạy giúp |
 | `Không tìm thấy lệnh "claude"` | Cài Claude Code (`npm install -g @anthropic-ai/claude-code`), mở lại Terminal |
 | Windows báo `npm.ps1 cannot be loaded` | Chạy trong PowerShell: `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`, hoặc dùng Command Prompt |
 | `Không tải được Google Sheet` | Google Sheet > Chia sẻ > "Bất kỳ ai có đường liên kết" > Người xem |
