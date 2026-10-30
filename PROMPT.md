@@ -27,7 +27,7 @@ Tải và cài Trợ lý Zalo cho tôi: đọc rồi làm theo đúng hướng d
 https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md
 Bộ não số 2 của tôi ở thư mục: <kéo thả thư mục Bộ não số 2 vào đây>
 Danh sách sản phẩm, lịch, giá của tôi ở Google Sheet: <dán link Google Sheet>
-Hãy đọc để hiểu toàn bộ doanh nghiệp, hỏi tôi những gì còn thiếu, rồi tạo agent AI Sales trong các nhóm đại lý và cộng tác viên: nhặt sản phẩm phù hợp, kiểm tra còn chỗ hay hết chỗ, trả mã sản phẩm và hoa hồng, chuyển sales khi họ muốn giữ chỗ.
+Hãy đọc để hiểu toàn bộ doanh nghiệp, hỏi tôi những gì còn thiếu, rồi tạo agent AI Sales trong các nhóm đại lý và cộng tác viên: nhặt sản phẩm phù hợp, kiểm tra còn chỗ hay hết chỗ, trả mã sản phẩm và hoa hồng, nhận thông tin giữ chỗ như một sales thật.
 ```
 
 Google Sheet cần bật Chia sẻ > "Bất kỳ ai có đường liên kết" > Người xem.
@@ -47,6 +47,16 @@ Hãy đọc để hiểu toàn bộ doanh nghiệp, hỏi tôi những gì còn 
 Tải và cài Trợ lý Zalo cho tôi: đọc rồi làm theo đúng hướng dẫn ở
 https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md
 Tôi chưa có bộ não: dùng bộ não mẫu (công ty du lịch Sen Vàng) để xem thử agent trả lời thế nào trước khi nối Zalo.
+```
+
+## 5. Thực hành ngay với dữ liệu thật của VN Express Tour
+
+Không cần bộ não riêng: dùng bảng lịch khởi hành tour ghép quốc tế của VN Express Tour có sẵn trong mã nguồn, cùng hai agent dựng sẵn (tư vấn khách lẻ, AI Sales cho đại lý và cộng tác viên).
+
+```text
+Tải và cài Trợ lý Zalo cho tôi: đọc rồi làm theo đúng hướng dẫn ở
+https://raw.githubusercontent.com/Freedombuiders/tro-ly-zalo/main/skills/tro-ly-zalo/SKILL.md
+Tôi muốn thực hành với dữ liệu thật của VN Express Tour có sẵn trong mã nguồn (npm run mau-vne): cho tôi hỏi thử agent tư vấn khách và agent AI Sales, rồi nối Zalo.
 ```
 
 ## Sau khi cài xong

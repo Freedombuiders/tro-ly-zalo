@@ -21,6 +21,7 @@ npm run kiem-tra                         # kiểm tra Node, CLI, cấu hình, ph
 npm run thu <id-agent> "câu hỏi"    # hỏi thử agent, không cần Zalo (bỏ câu hỏi để trò chuyện liên tục)
 npm run gia-lap <id-agent> [vai...]  # AI đóng vai khách (de-tinh ky-tinh mac-ca kho-tinh gai-bay dai-ly), AI khác chấm điểm
 npm run dong-bo                          # đồng bộ Google Sheet / Excel vào bộ não
+npm run mau-vne                          # thực hành với dữ liệu thật VN Express Tour (bộ não, agent, cấu hình dựng sẵn)
 npm run dang-nhap                        # đăng nhập Zalo bằng QR (data/qr-zalo.png)
 npm run nhom                             # danh sách nhóm và id
 npm run giao <id-agent> <id-nhóm>...  # giao nhóm cho agent

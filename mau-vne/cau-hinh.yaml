@@ -1,0 +1,44 @@
+# Cấu hình thực hành với dữ liệu thật của VN Express Tour.
+# Lệnh "npm run mau-vne" chép file này thành cau-hinh.yaml (cấu hình cũ được cất vào data/).
+
+bo_nao: ./bo-nao-vne
+
+ai: tu-dong
+model:
+  claude: claude-sonnet-5-5
+  codex: gpt-6.1-sol
+
+nhom_bao_cao: ""
+
+# Tin riêng 1-1 và các nhóm chưa giao: agent tư vấn trả lời (nhóm thì khi được tag).
+mac_dinh:
+  agent: tu-van-vne
+  chat_rieng: true
+  nhom_khi_duoc_tag: true
+  che_do: nhap
+  # che_do_nhom: tu-gui   # bỏ dấu # để gửi thật ở nhóm khi được tag, tin riêng vẫn theo che_do
+
+agents:
+  - id: tu-van-vne
+    ten: Tư vấn VN Express Tour
+    # khách lẻ, gia đình, nhóm bạn
+    nhom: []
+    tra_loi_khi: moi-tin
+    che_do: nhap
+
+  - id: ai-sales-vne
+    ten: AI Sales VN Express Tour
+    # nhóm đại lý, cộng tác viên: nhặt tour, kiểm tra chỗ, trả mã tour và hoa hồng
+    nhom: []
+    tra_loi_khi: khi-duoc-goi
+    che_do: nhap
+
+# Đọc thẳng Google Sheet của VNE 15 phút một lần, tải luôn hơn 500 lịch trình Google Docs được link trong bảng.
+# Không có mạng thì đổi link thành: ./du-lieu-mau/VNE3 - LKH TOUR GHÉP QUỐC TẾ.xlsx
+dong_bo:
+  moi_phut: 15
+  nguon:
+    - ten: Lịch khởi hành VNE
+      link: https://docs.google.com/spreadsheets/d/1u8HhQcn8iGpjDLFxnGY_Y4qZ8lmE1Yu1C18j_pR5rVI/edit
+      luu_vao: Lịch khởi hành VNE
+      tai_lich_trinh: true

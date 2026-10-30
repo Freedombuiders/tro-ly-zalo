@@ -11,9 +11,11 @@ export const CHO_GOM_TIN_MS = { nhom: 6000, rieng: 3000 }; // đợi khách nh�
 const NHUONG_NGUOI_THAT_MS = 30 * 60 * 1000; // nhân viên vừa nhắn bằng nick này thì agent nhường 30 phút
 const TOI_DA_CHAY_CUNG_LUC = 2;
 const TOI_DA_TIN_MOI_GIO = 60;
-const NHAC_DANG_SOAN_MS = 4000;
+const NHAC_DANG_SOAN_MS = 4000; // bong bóng "đang soạn tin" của Zalo tắt sau vài giây, phải gửi lại
 const TOI_DA_LUOT_MOI_CUOC_MOI_GIO = 20; // chống spam: một người nhắn dồn dập không làm tốn lượt AI
-const TOI_DA_KY_TU_MOI_TIN = 2000; // bong bóng "đang soạn tin" của Zalo tắt sau vài giây, phải gửi lại
+const TOI_DA_KY_TU_MOI_TIN = 2000;
+const MA_NICK_MO_NOI_KHAC = [3000, 3003]; // DuplicateConnection, KickConnection của zca-js
+export const CHO_NOI_LAI_GIAY = [5, 15, 30, 60, 120]; // mất kết nối lần thứ n thì đợi bấy nhiêu giây rồi nối lại
 
 export const gio = () => new Date(Date.now() + 7 * 3600 * 1000).toISOString().slice(11, 19);
 const cat = (s, n = 160) => (s.length > n ? `${s.slice(0, n)}…` : s).replace(/\n/g, ' ⏎ ');
@@ -271,9 +273,25 @@ export async function chayBot(ch, { log = console.log, api: apiCo, hoi = hoiAgen
     }
   });
 
+  // Mạng chập chờn, máy ngủ dậy: tự kết nối lại. Nick mở ở nơi khác (3000, 3003) thì dừng, không giành lại.
+  let lanNoiLai = 0;
+  api.listener.on('connected', () => {
+    if (lanNoiLai) log(`[${gio()}] Đã kết nối lại Zalo.`);
+    lanNoiLai = 0;
+  });
   api.listener.on('error', (err) => log(`[${gio()}] Lỗi kết nối Zalo: ${String(err?.message ?? err)}`));
-  api.listener.on('closed', (code, reason) => {
-    log(`[${gio()}] Mất kết nối Zalo (${code} ${reason ?? ''}). Nếu nick vừa đăng nhập ở máy khác, mỗi nick chỉ chạy được ở một nơi.`);
+  api.listener.on('closed', (code) => {
+    if (MA_NICK_MO_NOI_KHAC.includes(code)) {
+      log(`[${gio()}] Zalo ngắt kết nối vì nick vừa mở ở nơi khác (mã ${code}). Mỗi nick chỉ chạy được ở một nơi: tắt nơi kia rồi chạy lại npm start.`);
+      process.exitCode = 1;
+      return;
+    }
+    const giay = CHO_NOI_LAI_GIAY[Math.min(lanNoiLai, CHO_NOI_LAI_GIAY.length - 1)];
+    lanNoiLai++;
+    log(`[${gio()}] Mất kết nối Zalo (mã ${code}). Thử kết nối lại sau ${giay} giây (lần ${lanNoiLai}).`);
+    setTimeout(() => {
+      try { api.listener.start({ retryOnClose: true }); } catch (err) { log(`[${gio()}] Không kết nối lại được: ${err.message}`); }
+    }, giay * 1000);
   });
   api.listener.start({ retryOnClose: true });
 

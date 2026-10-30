@@ -18,6 +18,7 @@
     "gia-lap": "node src/lenh.js gia-lap",
     "dong-bo": "node src/lenh.js dong-bo",
     "kiem-tra": "node src/lenh.js kiem-tra",
+    "mau-vne": "node src/lenh.js mau-vne",
     "test": "node --test"
   },
   "dependencies": {

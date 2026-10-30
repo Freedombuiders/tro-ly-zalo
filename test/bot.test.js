@@ -6,7 +6,7 @@ import path from 'node:path';
 import { test } from 'node:test';
 
 process.env.TRO_LY_DATA = fs.mkdtempSync(path.join(os.tmpdir(), 'tro-ly-zalo-'));
-const { chayBot, CHO_GOM_TIN_MS, tachBongBong, anhHopLe } = await import('../src/bot.js');
+const { chayBot, CHO_GOM_TIN_MS, CHO_NOI_LAI_GIAY, tachBongBong, anhHopLe } = await import('../src/bot.js');
 const { ThreadType } = await import('zca-js');
 CHO_GOM_TIN_MS.nhom = 20;
 CHO_GOM_TIN_MS.rieng = 20;
@@ -228,4 +228,24 @@ test('mac_dinh.che_do_nhom: gửi thật ở nhóm khi được tag, tin riêng 
   await doi(150);
   assert.equal(hoi.length, 2);
   assert.deepEqual(gui.map((g) => g.threadId), ['G7']);
+});
+
+test('mất kết nối thì tự nối lại, nick mở ở nơi khác thì dừng', async () => {
+  CHO_NOI_LAI_GIAY.splice(0, CHO_NOI_LAI_GIAY.length, 0.01);
+  const api = zaloGia();
+  let lanStart = 0;
+  api.listener.start = () => { lanStart++; };
+  const nhatKy = [];
+  await chayBot(cauHinh([agentMau()]), { api, log: (s) => nhatKy.push(s), hoi: async () => ({}), guiZalo: async () => {}, guiAnhZalo: async () => {} });
+  assert.equal(lanStart, 1);
+  api.listener.emit('closed', 1006, '');
+  await doi(60);
+  assert.equal(lanStart, 2);
+  api.listener.emit('connected');
+  assert.match(nhatKy.at(-1), /Đã kết nối lại/);
+  api.listener.emit('closed', 3000, '');
+  await doi(60);
+  assert.equal(lanStart, 2);
+  assert.match(nhatKy.at(-1), /nơi khác/);
+  process.exitCode = 0;
 });

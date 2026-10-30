@@ -179,6 +179,8 @@ async function taiLichTrinh(thuMuc, ids, log) {
         ].join('\n'));
         chiMuc[id] = { file, luc: Date.now() };
         dem.moi++;
+        // Lưu chỉ mục dọc đường: lần tải đầu bị ngắt giữa chừng thì lần sau tải tiếp, không tải lại từ đầu.
+        if (dem.moi % 25 === 0) fs.writeFileSync(fileChiMuc, JSON.stringify(chiMuc));
       } catch {
         // Giữ bản đã tải lần trước nếu có, chỉ đánh dấu để thử lại sau.
         chiMuc[id] = cu?.file ? { ...cu, luc: Date.now() - TAI_LAI_SAU_MS + THU_LAI_LOI_SAU_MS } : { loi: true, luc: Date.now() };
@@ -244,13 +246,21 @@ export async function dongBoNguon(ch, nguon, { log } = {}) {
   return mucLuc.length;
 }
 
+let dangDongBo = false;
+
 export async function dongBoTatCa(ch, { log = console.log } = {}) {
-  for (const nguon of ch.dong_bo.nguon) {
-    try {
-      const n = await dongBoNguon(ch, nguon, { log });
-      log(`Đồng bộ "${nguon.ten}": ${n} trang tính.`);
-    } catch (err) {
-      log(`Đồng bộ "${nguon.ten}" lỗi: ${err.message}`);
+  if (dangDongBo) return; // lần trước (ví dụ tải lịch trình lần đầu) chưa xong thì bỏ qua lượt này
+  dangDongBo = true;
+  try {
+    for (const nguon of ch.dong_bo.nguon) {
+      try {
+        const n = await dongBoNguon(ch, nguon, { log });
+        log(`Đồng bộ "${nguon.ten}": ${n} trang tính.`);
+      } catch (err) {
+        log(`Đồng bộ "${nguon.ten}" lỗi: ${err.message}`);
+      }
     }
+  } finally {
+    dangDongBo = false;
   }
 }

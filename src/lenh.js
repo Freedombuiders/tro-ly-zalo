@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-// Lệnh dòng: chay | dang-nhap | nhom | giao | thu | dong-bo | kiem-tra
+// Lệnh dòng: chay | dang-nhap | nhom | giao | thu | dong-bo | kiem-tra | mau-vne
 import fs from 'node:fs';
+import path from 'node:path';
 import readline from 'node:readline/promises';
 import YAML from 'yaml';
-import { FILE_CAU_HINH, FILE_TOM_TAT, docCauHinh, fileVaiTro, kiemTraCauHinh, timAgent } from './cau-hinh.js';
+import { FILE_CAU_HINH, FILE_TOM_TAT, GOC, THU_MUC_DATA, docCauHinh, fileVaiTro, kiemTraCauHinh, timAgent } from './cau-hinh.js';
 import { chayLenh, hoiAgent } from './agent.js';
 import { chayBot, gio } from './bot.js';
 import { dongBoTatCa } from './dong-bo.js';
@@ -154,7 +155,8 @@ async function chay() {
   const ch = docCauHinh();
   const loi = kiemTraCauHinh(ch);
   if (loi.length) throw new Error(`Cấu hình chưa đúng:\n- ${loi.join('\n- ')}\n(Chạy npm run kiem-tra để xem chi tiết)`);
-  if (ch.dong_bo.nguon.length) await dongBoTatCa(ch, { log: (s) => console.log(`[${gio()}] ${s}`) });
+  // Đồng bộ chạy song song: lần đầu tải hàng trăm lịch trình mất vài phút, không bắt Zalo chờ.
+  if (ch.dong_bo.nguon.length) dongBoTatCa(ch, { log: (s) => console.log(`[${gio()}] ${s}`) });
   await chayBot(ch);
   console.log(`[${gio()}] Trợ lý Zalo đang chạy. Bộ não: ${ch.bo_nao}`);
   for (const a of ch.agents) {
@@ -172,6 +174,47 @@ async function chay() {
   console.log('Nhấn Ctrl+C để dừng.\n');
 }
 
+/** Thực hành với dữ liệu thật của VN Express Tour: chép bộ não, agent, cấu hình mẫu trong mau-vne/ rồi đồng bộ. */
+async function mauVne() {
+  const mau = path.join(GOC, 'mau-vne');
+  const cauHinhMau = fs.readFileSync(path.join(mau, 'cau-hinh.yaml'), 'utf8');
+  const dangDungVne = fs.existsSync(FILE_CAU_HINH) && /^bo_nao:\s*\.\/bo-nao-vne\s*$/m.test(fs.readFileSync(FILE_CAU_HINH, 'utf8'));
+  if (!dangDungVne) {
+    // Cất cấu hình và tóm tắt cũ để quay lại được; chạy lại lệnh này thì giữ nguyên nhóm đã giao.
+    fs.mkdirSync(THU_MUC_DATA, { recursive: true });
+    if (fs.existsSync(FILE_CAU_HINH)) fs.copyFileSync(FILE_CAU_HINH, path.join(THU_MUC_DATA, 'cau-hinh.truoc-vne.yaml'));
+    if (fs.existsSync(FILE_TOM_TAT)) fs.copyFileSync(FILE_TOM_TAT, path.join(THU_MUC_DATA, 'tom-tat-doanh-nghiep.truoc-vne.md'));
+    fs.writeFileSync(FILE_CAU_HINH, cauHinhMau);
+  }
+  fs.cpSync(path.join(mau, 'agents'), path.join(GOC, 'agents'), { recursive: true });
+  const ch = docCauHinh();
+  if (!fs.existsSync(ch.bo_nao)) fs.cpSync(path.join(mau, 'bo-nao'), ch.bo_nao, { recursive: true });
+
+  // Bảng lịch khởi hành trước (vài giây) để agent trả lời được ngay, lịch trình chi tiết sau.
+  const chiBang = (c) => ({ ...c, dong_bo: { ...c.dong_bo, nguon: c.dong_bo.nguon.map((n) => ({ ...n, tai_lich_trinh: false })) } });
+  console.log('Đang tải Google Sheet lịch khởi hành của VN Express Tour...');
+  await dongBoTatCa(chiBang(ch));
+  const thuMuc = path.join(ch.bo_nao, ch.dong_bo.nguon[0]?.luu_vao ?? '');
+  const coDuLieu = () => fs.existsSync(thuMuc) && fs.readdirSync(thuMuc).filter((f) => f.endsWith('.md')).length > 1;
+  if (!coDuLieu()) {
+    console.log('Không tải được Google Sheet, dùng file Excel có sẵn: du-lieu-mau/VNE3 - LKH TOUR GHÉP QUỐC TẾ.xlsx');
+    const doc = YAML.parseDocument(fs.readFileSync(FILE_CAU_HINH, 'utf8'));
+    doc.setIn(['dong_bo', 'nguon', 0, 'link'], './du-lieu-mau/VNE3 - LKH TOUR GHÉP QUỐC TẾ.xlsx');
+    fs.writeFileSync(FILE_CAU_HINH, doc.toString());
+    await dongBoTatCa(chiBang(docCauHinh()));
+  }
+  if (!coDuLieu()) throw new Error('Chưa đồng bộ được dữ liệu VNE, xem lỗi ở trên.');
+  console.log('Đã có bảng lịch khởi hành. Đang tải hơn 500 lịch trình chi tiết (lần đầu khoảng 5-10 phút; bị ngắt thì lần sau tải tiếp, npm start cũng tự tải tiếp)...');
+  await dongBoTatCa(docCauHinh());
+  console.log(`
+Xong. Bộ não: ${ch.bo_nao}
+Agent: tu-van-vne (khách lẻ, mặc định cho tin riêng) và ai-sales-vne (nhóm đại lý, CTV), đang ở chế độ NHÁP.
+Thử ngay:
+  npm run thu tu-van-vne "nhà mình 4 người muốn đi Quảng Châu tháng 12"
+  npm run thu ai-sales-vne "Lệ Giang tháng 12 còn chỗ không em"
+Nối Zalo: npm run dang-nhap, rồi npm start.${dangDungVne ? '' : '\nCấu hình cũ đã cất ở data/cau-hinh.truoc-vne.yaml.'}`);
+}
+
 const LENH = {
   chay,
   'dang-nhap': async () => {
@@ -184,10 +227,11 @@ const LENH = {
   'dong-bo': () => dongBoTatCa(docCauHinh()),
   'gia-lap': giaLapLenh,
   'kiem-tra': kiemTra,
+  'mau-vne': mauVne,
 };
 
 if (!LENH[lenh]) {
-  console.log('Lệnh: npm start | npm run dang-nhap | npm run nhom | npm run giao <agent> <nhóm> | npm run thu [id-agent] ["câu hỏi"] | npm run dong-bo | npm run kiem-tra');
+  console.log('Lệnh: npm start | npm run dang-nhap | npm run nhom | npm run giao <agent> <nhóm> | npm run thu [id-agent] ["câu hỏi"] | npm run dong-bo | npm run kiem-tra | npm run mau-vne');
   process.exit(1);
 }
 try {

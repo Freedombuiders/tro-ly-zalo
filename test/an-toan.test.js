@@ -19,6 +19,22 @@ test('luật chặn đọc: cấm mọi mục ngang hàng trên đường tới 
   assert.ok(luat.includes('Grep(**/Me.md)') && luat.includes('Glob(~/.ssh/**)'));
 });
 
+test('luật chặn đọc: không cấm liên kết trỏ tới thư mục chứa bộ não (như /tmp -> /private/tmp)', { skip: process.platform === 'win32' }, () => {
+  const goc = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'chan-lk-')));
+  fs.mkdirSync(path.join(goc, 'that', 'bo-nao'), { recursive: true });
+  fs.mkdirSync(path.join(goc, 'khac'));
+  fs.symlinkSync(path.join(goc, 'that'), path.join(goc, 'lien-ket'));
+  fs.symlinkSync(path.join(goc, 'khac'), path.join(goc, 'lien-ket-khac'));
+  const luat = luatChanDoc(path.join(goc, 'that', 'bo-nao'));
+  assert.ok(!luat.includes(`Read(/${path.join(goc, 'lien-ket')}/**)`), 'liên kết tới thư mục chứa bộ não không bị cấm');
+  assert.ok(luat.includes(`Read(/${path.join(goc, 'lien-ket-khac')}/**)`));
+  assert.ok(luat.includes(`Read(/${path.join(goc, 'khac')}/**)`));
+  // Gọi bằng đường dẫn đi qua liên kết: vẫn cấm ngang hàng trên cả hai đường
+  const quaLienKet = luatChanDoc(path.join(goc, 'lien-ket', 'bo-nao'));
+  assert.ok(quaLienKet.includes(`Read(/${path.join(goc, 'khac')}/**)`));
+  assert.ok(!quaLienKet.some((l) => l.includes(`${path.sep}bo-nao`)));
+});
+
 test('lọc tin gửi đi: chặn đường dẫn, file nội bộ, khoá, phiên đăng nhập; cho qua tin bình thường', () => {
   for (const ok of [
     'Tour Quảng Châu bay no shopping 13.490.000, đi 4/11. Lịch trình: https://docs.google.com/document/d/1srx6l_m9_esRB0M00CxxpHJTrIH_SfJd/edit',

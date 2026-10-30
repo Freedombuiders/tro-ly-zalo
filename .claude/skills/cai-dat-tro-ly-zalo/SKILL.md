@@ -25,6 +25,7 @@ npm run kiem-tra
 ## 2. Trỏ tới Bộ não số 2
 
 - Người dùng đã đưa đường dẫn thư mục thì dùng; chưa có thì hỏi ("kéo thả thư mục Bộ não số 2 vào đây"). Muốn chạy thử với dữ liệu mẫu thì dùng `./bo-nao-mau` (công ty du lịch hư cấu Sen Vàng).
+- Muốn thực hành với dữ liệu thật của VN Express Tour: chạy `npm run mau-vne` (cần mạng; lần đầu 5-10 phút vì tải hơn 500 lịch trình: đặt thời gian chờ 10 phút hoặc chạy nền; bị ngắt thì chạy lại, lệnh tải tiếp). Lệnh này tự viết `cau-hinh.yaml`, bộ não `bo-nao-vne`, tóm tắt và hai agent `tu-van-vne` (khách lẻ), `ai-sales-vne` (đại lý, CTV), rồi đồng bộ Google Sheet và lịch trình. Sau đó nhảy tới mục 6 (Chạy thử), bỏ qua mục 3 đến 5.
 - Ghi đường dẫn tuyệt đối vào `bo_nao:` trong `cau-hinh.yaml`, đặt trong ngoặc kép. Trên Windows dùng dấu `/` thay cho `\`.
 
 ## 3. Đọc bộ não để hiểu doanh nghiệp

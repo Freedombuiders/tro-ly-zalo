@@ -70,7 +70,7 @@ Bộ não mẫu `bo-nao-mau/` là của công ty du lịch hư cấu **Sen Vàng
 
 Giá, lịch và số chỗ nằm trong hai file Excel ở `bo-nao-mau/1. Thu Thập/`, được đồng bộ thành ghi chú trong bộ não. Thay bằng link Google Sheet của bạn là agent đọc ngay sheet đó.
 
-**Dữ liệu thật để thử:** `du-lieu-mau/VNE3 - LKH TOUR GHÉP QUỐC TẾ.xlsx` là bảng lịch khởi hành tour ghép quốc tế của **VN Express Tour** (anh Hiếu Đặng chia sẻ làm ví dụ cho buổi thực hành): hàng trăm lịch khởi hành có mã tour, giá, hoa hồng CTV, số chỗ còn lại, link lịch trình. Giá và số chỗ là ảnh chụp tại thời điểm chia sẻ, không dùng để đặt tour thật. Cách dùng: bỏ dấu `#` ở nguồn VNE trong `cau-hinh.yaml` (mục `dong_bo`, đọc thẳng Google Sheet của VNE và tải luôn hơn 500 file lịch trình Google Docs được link trong bảng), chạy `npm run dong-bo`, rồi hỏi thử agent Sales "Lệ Giang tháng 12 còn chỗ không, cho mã tour với com".
+**Dữ liệu thật để thử:** `du-lieu-mau/VNE3 - LKH TOUR GHÉP QUỐC TẾ.xlsx` là bảng lịch khởi hành tour ghép quốc tế của **VN Express Tour** (anh Hiếu Đặng chia sẻ làm ví dụ cho buổi thực hành): hàng trăm lịch khởi hành có mã tour, giá, hoa hồng CTV, số chỗ còn lại, link lịch trình. File Excel là ảnh chụp tại thời điểm chia sẻ; `npm run mau-vne` đọc bản mới nhất trên Google Sheet. Chỉ dùng để thực hành, không dùng để đặt tour thật. Cách dùng: chạy `npm run mau-vne` (hoặc dán prompt số 5 trong [PROMPT.md](PROMPT.md)). Lệnh này tạo bộ não `bo-nao-vne`, hai agent `tu-van-vne` (khách lẻ) và `ai-sales-vne` (đại lý, CTV) dựng sẵn trong `mau-vne/`, đọc thẳng Google Sheet của VNE và tải luôn hơn 500 lịch trình Google Docs được link trong bảng (không có mạng thì dùng file Excel trên). Sau đó hỏi thử: `npm run thu ai-sales-vne "Lệ Giang tháng 12 còn chỗ không em"`. Cấu hình cũ được cất ở `data/cau-hinh.truoc-vne.yaml`.
 
 ## Cách hoạt động
 
@@ -98,6 +98,7 @@ Giá, lịch và số chỗ nằm trong hai file Excel ở `bo-nao-mau/1. Thu Th
 | `npm run thu <id-agent> "câu hỏi"` | Hỏi thử agent, không cần Zalo. Bỏ câu hỏi để trò chuyện liên tục |
 | `npm run gia-lap <id-agent>` | AI đóng vai 5 kiểu khách (dễ tính, kỹ tính, mặc cả, khó tính, gài bẫy) nhắn nhiều lượt với agent, AI khác chấm điểm và gợi ý sửa. Chọn vai: `npm run gia-lap <id-agent> mac-ca dai-ly`. Hội thoại lưu ở `data/gia-lap/` |
 | `npm run dong-bo` | Đồng bộ Google Sheet / Excel vào bộ não |
+| `npm run mau-vne` | Thực hành với dữ liệu thật VN Express Tour: bộ não, hai agent, cấu hình dựng sẵn |
 | `npm run dang-nhap` | Đăng nhập Zalo bằng mã QR |
 | `npm run nhom` | Danh sách nhóm Zalo và id |
 | `npm run giao <id-agent> <id-nhóm>` | Giao nhóm cho agent |
@@ -172,4 +173,4 @@ Agent hiểu doanh nghiệp qua ba lớp: `src/luat-chung.md` (luật chung, gi�
 
 ## Giấy phép
 
-MIT, © 2026 Tony Hoang (xem [LICENSE](LICENSE)). Dùng thư viện [`zca-js`](https://github.com/RFS-ADRENO/zca-js) (MIT), [`exceljs`](https://github.com/exceljs/exceljs) (MIT), [`yaml`](https://github.com/eemeli/yaml) (ISC). Claude Code (Anthropic) và Codex (OpenAI) không đi kèm: bạn tự cài và dùng theo điều khoản của từng nhà cung cấp. Dữ liệu trong `bo-nao-mau/` là hư cấu. File trong `du-lieu-mau/` thuộc VN Express Tour, được chia sẻ làm ví dụ cho buổi thực hành.
+MIT, © 2026 Tony Hoang (xem [LICENSE](LICENSE)). Dùng thư viện [`zca-js`](https://github.com/RFS-ADRENO/zca-js) (MIT), [`exceljs`](https://github.com/exceljs/exceljs) (MIT), [`yaml`](https://github.com/eemeli/yaml) (ISC). Claude Code (Anthropic) và Codex (OpenAI) không đi kèm: bạn tự cài và dùng theo điều khoản của từng nhà cung cấp. Dữ liệu trong `bo-nao-mau/` là hư cấu. File trong `du-lieu-mau/` và Google Sheet mà `mau-vne/` đọc thuộc VN Express Tour, được chia sẻ làm ví dụ cho buổi thực hành.

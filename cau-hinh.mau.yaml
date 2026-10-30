@@ -68,8 +68,8 @@ dong_bo:
       link: ./bo-nao-mau/1. Thu Thập/Bảng giá nhà cung cấp 2026.xlsx
       luu_vao: 6. Company Brain OS/5. Vận Hành/Nhà Cung Cấp/Bảng giá
 
-    # Dữ liệu thật để thử (VN Express Tour): bỏ dấu # ở 3 dòng dưới. Nên dùng với bộ não riêng,
-    # không trộn với bộ não mẫu Sen Vàng. Có thể thay link bằng link Google Sheet của bạn.
+    # Dữ liệu thật để thử (VN Express Tour): chạy "npm run mau-vne" để dựng sẵn bộ não, agent và cấu hình VNE.
+    # Hoặc bỏ dấu # ở các dòng dưới để thêm nguồn này vào bộ não của bạn (không trộn với bộ não mẫu Sen Vàng).
     # - ten: Lịch khởi hành tour ghép quốc tế VNE
     #   link: https://docs.google.com/spreadsheets/d/1u8HhQcn8iGpjDLFxnGY_Y4qZ8lmE1Yu1C18j_pR5rVI/edit
     #   luu_vao: 6. Company Brain OS/1. Sản Phẩm & R&D/Danh Mục Sản Phẩm/Lịch khởi hành VNE

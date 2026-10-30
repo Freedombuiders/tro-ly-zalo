@@ -71,6 +71,7 @@ Trên Windows PowerShell dùng `npm.cmd` thay cho `npm` ở mọi lệnh, để 
 
 - Mọi lệnh `npm run ...` phải chạy trong `<DA>`. Thư mục làm việc của phiên này có thể là chỗ khác, nên luôn `cd` trước.
 - Người dùng chưa đưa đường dẫn Bộ não số 2: hỏi họ (kéo thả thư mục vào khung chat). Họ muốn xem thử trước thì dùng bộ não mẫu có sẵn của công ty du lịch hư cấu Sen Vàng (`./bo-nao-mau`).
+- Người dùng muốn thực hành với dữ liệu thật của VN Express Tour (VNE): chạy `npm run mau-vne` (cần mạng; bảng lịch khởi hành có sau vài giây, hơn 500 lịch trình chi tiết tải thêm 5-10 phút: đặt thời gian chờ 10 phút hoặc chạy nền; bị ngắt thì chạy lại, lệnh tải tiếp chỗ còn thiếu) rồi làm tiếp từ mục "Chạy thử" của skill cài đặt, bỏ qua các mục trỏ bộ não, đọc bộ não, hỏi chủ doanh nghiệp, viết agent. Thử `tu-van-vne` với câu của khách lẻ và `ai-sales-vne` với câu của đại lý.
 - `npm run dang-nhap` chờ người dùng quét QR tới vài phút: chạy nền hoặc đặt thời gian chờ dài (5 phút).
 
 ## 5. Kết thúc

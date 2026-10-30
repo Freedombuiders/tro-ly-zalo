@@ -18,20 +18,31 @@ export function duongDanLuat(p) {
  * cấm hết các mục ngang hàng. Cộng thêm các file nhạy cảm phòng khi bộ não là một thư mục rất rộng.
  */
 export function luatChanDoc(boNao, { thuMucDuAn } = {}) {
-  const dich = path.resolve(boNao);
-  const chuoi = [];
-  for (let p = dich; ; p = path.dirname(p)) {
-    chuoi.unshift(p);
-    if (path.dirname(p) === p) break;
-  }
+  const goc = path.resolve(boNao);
+  let that = goc;
+  try { that = fs.realpathSync(goc); } catch { /* chưa có thư mục thì dùng nguyên đường dẫn */ }
+  // Claude Code lần theo liên kết: cấm /tmp (trỏ tới /private/tmp) là cấm luôn bộ não nằm trong /private/tmp.
+  const chuaBoNao = (p) => {
+    try {
+      const r = fs.realpathSync(p);
+      return that === r || that.startsWith(r.endsWith(path.sep) ? r : r + path.sep);
+    } catch { return false; }
+  };
   const cam = [];
-  for (let i = 0; i < chuoi.length - 1; i++) {
-    let muc = [];
-    try { muc = fs.readdirSync(chuoi[i]); } catch { continue; }
-    for (const ten of muc.slice(0, TOI_DA_MUC_MOI_CAP)) {
-      const day = path.join(chuoi[i], ten);
-      if (day === chuoi[i + 1]) continue;
-      cam.push(duongDanLuat(day), `${duongDanLuat(day)}/**`);
+  for (const dich of new Set([goc, that])) {
+    const chuoi = [];
+    for (let p = dich; ; p = path.dirname(p)) {
+      chuoi.unshift(p);
+      if (path.dirname(p) === p) break;
+    }
+    for (let i = 0; i < chuoi.length - 1; i++) {
+      let muc = [];
+      try { muc = fs.readdirSync(chuoi[i]); } catch { continue; }
+      for (const ten of muc.slice(0, TOI_DA_MUC_MOI_CAP)) {
+        const day = path.join(chuoi[i], ten);
+        if (day === chuoi[i + 1] || chuaBoNao(day)) continue;
+        cam.push(duongDanLuat(day), `${duongDanLuat(day)}/**`);
+      }
     }
   }
   if (thuMucDuAn) {
@@ -39,7 +50,7 @@ export function luatChanDoc(boNao, { thuMucDuAn } = {}) {
   }
   cam.push('**/Me.md', '**/.env', '**/.env.*', '**/*.pem', '**/*.key', '**/id_rsa*', '**/id_ed25519*', '**/.obsidian/**',
     '~/.ssh/**', '~/.claude/**', '~/.codex/**', '~/.aws/**', '~/.config/**', '~/.gnupg/**', '~/.npmrc', '~/.netrc', '~/.git-credentials');
-  return ['Read', 'Grep', 'Glob'].flatMap((cong) => cam.map((c) => `${cong}(${c})`));
+  return ['Read', 'Grep', 'Glob'].flatMap((cong) => [...new Set(cam)].map((c) => `${cong}(${c})`));
 }
 
 const MAU_NHAY_CAM = [
